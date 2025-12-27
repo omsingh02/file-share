@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Database error:', error);
             return NextResponse.json({ error: 'Failed to fetch files' }, { status: 500 });
         }
 
@@ -42,7 +41,6 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ files: transformedFiles });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

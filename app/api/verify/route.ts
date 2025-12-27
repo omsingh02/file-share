@@ -62,7 +62,6 @@ export async function POST(request: NextRequest) {
             .createSignedUrl((file as any).filename, 3600); // 1 hour expiry
 
         if (urlError || !signedUrlData) {
-            console.error('Signed URL error:', urlError);
             return NextResponse.json({ error: 'Failed to generate file URL' }, { status: 500 });
         }
 
@@ -77,7 +76,6 @@ export async function POST(request: NextRequest) {
             },
         });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

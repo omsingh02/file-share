@@ -24,7 +24,7 @@ export default function FileList() {
                 setFiles(data.files || []);
             }
         } catch (error) {
-            console.error('Failed to fetch files:', error);
+            // Error handled silently
         } finally {
             setIsLoading(false);
         }
@@ -42,7 +42,7 @@ export default function FileList() {
                 setFiles(files.filter(f => f.id !== fileId));
             }
         } catch (error) {
-            console.error('Failed to delete file:', error);
+            // Error handled silently
         }
     };
 
@@ -81,61 +81,143 @@ export default function FileList() {
 
     return (
         <>
-            <div className="space-y-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {files.map((file) => {
                     const typeInfo = getFileTypeInfo(file.mimeType);
 
                     return (
                         <div
                             key={file.id}
-                            className="flex items-center justify-between p-4 rounded border border-[var(--border)] hover:bg-[var(--background)]"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '1rem',
+                                borderRadius: '6px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#252525',
+                                transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2d2d2d';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#252525';
+                            }}
                         >
-                            <div className="flex items-center space-x-4 flex-1 min-w-0">
-                                <div className="text-2xl">{typeInfo.icon}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: '1.5rem', opacity: 0.7 }}>{typeInfo.icon}</div>
 
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-medium text-[var(--text)] truncate">
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <h3 style={{
+                                        fontWeight: 500,
+                                        color: '#e0e0e0',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        margin: 0,
+                                        fontSize: '0.95rem',
+                                    }}>
                                         {file.originalFilename}
                                     </h3>
-                                    <div className="flex items-center space-x-3 mt-1">
-                                        <span className="text-sm text-[var(--text-secondary)]">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.25rem' }}>
+                                        <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
                                             {formatFileSize(file.fileSize)}
                                         </span>
-                                        <Badge variant="default">{typeInfo.category}</Badge>
-                                        <span className="text-xs text-[var(--text-muted)]">
+                                        <span style={{
+                                            fontSize: '0.75rem',
+                                            color: '#6b7280',
+                                            padding: '0.125rem 0.5rem',
+                                            borderRadius: '3px',
+                                            backgroundColor: '#1a1a1a',
+                                        }}>{typeInfo.category}</span>
+                                        <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                                             {new Date(file.createdAt).toLocaleDateString()}
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center space-x-2 ml-4">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '1rem' }}>
+                                <button
                                     onClick={() => copyShortLink(file.shortCode)}
                                     title="Copy short link"
+                                    style={{
+                                        padding: '0.5rem 0.875rem',
+                                        fontSize: '0.8rem',
+                                        color: '#9ca3af',
+                                        backgroundColor: 'transparent',
+                                        border: '1px solid #3a3a3a',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        fontWeight: 500,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = '#1a1a1a';
+                                        e.currentTarget.style.color = '#e0e0e0';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                        e.currentTarget.style.color = '#9ca3af';
+                                    }}
                                 >
                                     Copy Link
-                                </Button>
+                                </button>
 
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
+                                <button
                                     onClick={() => handleManageAccess(file)}
                                     title="Manage access"
+                                    style={{
+                                        padding: '0.5rem 0.875rem',
+                                        fontSize: '0.8rem',
+                                        color: '#9ca3af',
+                                        backgroundColor: 'transparent',
+                                        border: '1px solid #3a3a3a',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        fontWeight: 500,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = '#1a1a1a';
+                                        e.currentTarget.style.color = '#e0e0e0';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                        e.currentTarget.style.color = '#9ca3af';
+                                    }}
                                 >
                                     Access
-                                </Button>
+                                </button>
 
-                                <Button
-                                    variant="danger"
-                                    size="sm"
+                                <button
                                     onClick={() => handleDelete(file.id)}
                                     title="Delete file"
+                                    style={{
+                                        padding: '0.5rem 0.875rem',
+                                        fontSize: '0.8rem',
+                                        color: '#ef4444',
+                                        backgroundColor: 'transparent',
+                                        border: '1px solid #3a3a3a',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        fontWeight: 500,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = '#7f1d1d';
+                                        e.currentTarget.style.borderColor = '#ef4444';
+                                        e.currentTarget.style.color = '#ffffff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                        e.currentTarget.style.borderColor = '#3a3a3a';
+                                        e.currentTarget.style.color = '#ef4444';
+                                    }}
                                 >
                                     Delete
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     );

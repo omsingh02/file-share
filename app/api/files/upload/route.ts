@@ -37,7 +37,6 @@ export async function POST(request: NextRequest) {
             });
 
         if (uploadError) {
-            console.error('Upload error:', uploadError);
             return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
         }
 
@@ -57,7 +56,6 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (dbError) {
-            console.error('Database error:', dbError);
             // Clean up uploaded file
             await adminClient.storage.from('files').remove([uniqueFilename]);
             return NextResponse.json({ error: 'Failed to save file metadata' }, { status: 500 });
@@ -74,7 +72,6 @@ export async function POST(request: NextRequest) {
             },
         });
     } catch (error) {
-        console.error('Upload error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

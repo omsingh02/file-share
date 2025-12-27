@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
             .eq('uploaded_by', user.id);
 
         if (filesError) {
-            console.error('Files error:', filesError);
             return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
         }
 
@@ -33,9 +32,7 @@ export async function GET(request: NextRequest) {
             .select('*', { count: 'exact', head: true })
             .in('file_id', (files || []).map((f: any) => f.id) || []);
 
-        if (accessError) {
-            console.error('Access error:', accessError);
-        }
+
 
         return NextResponse.json({
             totalFiles,
@@ -43,7 +40,6 @@ export async function GET(request: NextRequest) {
             totalAccess: totalAccess || 0,
         });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Input, Card } from '@/components/ui';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -36,55 +35,164 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--background)]">
-            <Card className="w-full max-w-md p-8">
-                <div className="mb-8">
-                    <div className="w-12 h-12 bg-[var(--primary)] rounded mb-4 flex items-center justify-center">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+        <div 
+            style={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem',
+                background: '#2a2a2a',
+                position: 'relative',
+            }}
+        >
+            {/* Login Card */}
+            <div style={{
+                width: '100%',
+                maxWidth: '560px',
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+                padding: '3rem 2.5rem',
+            }}>
+                {/* Heading */}
+                <h2 style={{ 
+                    fontSize: '1.75rem',
+                    textAlign: 'center',
+                    marginBottom: '2rem',
+                    color: '#6b7c93',
+                    fontWeight: 500,
+                    margin: '0 0 2rem 0',
+                }}>
+                    Login to your Account
+                </h2>
+
+                <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    {/* Username Field */}
+                    <div>
+                        <label 
+                            htmlFor="email" 
+                            style={{ 
+                                display: 'block',
+                                fontSize: '0.9rem',
+                                marginBottom: '0.5rem',
+                                color: '#adb5bd',
+                                fontWeight: 400,
+                            }}
+                        >
+                            Username
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            autoComplete="email"
+                            style={{ 
+                                width: '100%',
+                                padding: '0.875rem 1rem',
+                                borderRadius: '4px',
+                                border: 'none',
+                                backgroundColor: '#eff1f3',
+                                color: '#2d3748',
+                                fontSize: '1rem',
+                                outline: 'none',
+                                boxShadow: 'none',
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.outline = 'none';
+                                e.target.style.boxShadow = 'none';
+                            }}
+                        />
                     </div>
-                    <h1 className="text-2xl font-semibold text-[var(--text)] mb-1">File Share</h1>
-                    <p className="text-sm text-[var(--text-secondary)]">Sign in to manage your files</p>
-                </div>
 
-                <form onSubmit={handleLogin} className="space-y-4">
-                    <Input
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="admin@example.com"
-                        required
-                        autoComplete="email"
-                    />
+                    {/* Password Field */}
+                    <div>
+                        <label 
+                            htmlFor="password" 
+                            style={{ 
+                                display: 'block',
+                                fontSize: '0.9rem',
+                                marginBottom: '0.5rem',
+                                color: '#adb5bd',
+                                fontWeight: 400,
+                            }}
+                        >
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            autoComplete="current-password"
+                            style={{ 
+                                width: '100%',
+                                padding: '0.875rem 1rem',
+                                borderRadius: '4px',
+                                border: 'none',
+                                backgroundColor: '#eff1f3',
+                                color: '#2d3748',
+                                fontSize: '1rem',
+                                outline: 'none',
+                                boxShadow: 'none',
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.outline = 'none';
+                                e.target.style.boxShadow = 'none';
+                            }}
+                        />
+                    </div>
 
-                    <Input
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                        autoComplete="current-password"
-                    />
-
+                    {/* Error Message */}
                     {error && (
-                        <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
-                            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+                        <div style={{ 
+                            padding: '0.75rem',
+                            borderRadius: '4px',
+                            backgroundColor: '#fee2e2',
+                            border: '1px solid #fecaca',
+                        }}>
+                            <p style={{ 
+                                fontSize: '0.875rem',
+                                color: '#dc2626',
+                                margin: 0,
+                            }}>{error}</p>
                         </div>
                     )}
 
-                    <Button
+                    {/* Login Button */}
+                    <button
                         type="submit"
-                        variant="primary"
-                        className="w-full"
-                        isLoading={isLoading}
+                        disabled={isLoading}
+                        style={{ 
+                            width: '100%',
+                            padding: '1rem',
+                            borderRadius: '4px',
+                            border: 'none',
+                            backgroundColor: '#334155',
+                            color: 'white',
+                            fontSize: '0.95rem',
+                            fontWeight: 600,
+                            letterSpacing: '0.05em',
+                            cursor: isLoading ? 'not-allowed' : 'pointer',
+                            opacity: isLoading ? 0.7 : 1,
+                            marginTop: '0.5rem',
+                            transition: 'background-color 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isLoading) e.currentTarget.style.backgroundColor = '#475569';
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isLoading) e.currentTarget.style.backgroundColor = '#334155';
+                        }}
                     >
-                        Sign In
-                    </Button>
+                        {isLoading ? 'LOGGING IN...' : 'LOGIN'}
+                    </button>
                 </form>
-            </Card>
+            </div>
         </div>
     );
 }

@@ -29,7 +29,6 @@ export async function GET(
 
         return NextResponse.json({ file });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
@@ -71,13 +70,11 @@ export async function DELETE(
             .eq('id', id);
 
         if (deleteError) {
-            console.error('Delete error:', deleteError);
             return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });
         }
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

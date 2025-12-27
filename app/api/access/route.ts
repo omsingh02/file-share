@@ -40,7 +40,6 @@ export async function GET(request: NextRequest) {
             .order('created_at', { ascending: false });
 
         if (accessError) {
-            console.error('Access error:', accessError);
             return NextResponse.json({ error: 'Failed to fetch access list' }, { status: 500 });
         }
 
@@ -58,7 +57,6 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ access: transformedAccess });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
@@ -108,13 +106,11 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (accessError) {
-            console.error('Access error:', accessError);
             return NextResponse.json({ error: 'Failed to create access grant' }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, access });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
@@ -155,13 +151,11 @@ export async function DELETE(request: NextRequest) {
             .eq('id', accessId);
 
         if (deleteError) {
-            console.error('Delete error:', deleteError);
             return NextResponse.json({ error: 'Failed to delete access grant' }, { status: 500 });
         }
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

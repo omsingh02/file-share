@@ -74,31 +74,45 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
     };
 
     return (
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`
-          border-2 border-dashed rounded p-8 text-center
-          ${isDragging
-                        ? 'border-[var(--primary)] bg-blue-50 dark:bg-blue-950'
-                        : 'border-[var(--border)] hover:border-[var(--text-muted)]'
-                    }
-        `}
+                style={{
+                    border: isDragging ? '2px dashed #3b82f6' : '2px dashed #3a3a3a',
+                    borderRadius: '6px',
+                    padding: '2rem',
+                    textAlign: 'center',
+                    backgroundColor: isDragging ? '#1e3a5f' : 'transparent',
+                    transition: 'all 0.2s',
+                }}
             >
-                <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 rounded bg-[var(--primary)] flex items-center justify-center">
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{
+                        width: '64px',
+                        height: '64px',
+                        borderRadius: '6px',
+                        backgroundColor: '#3a3a3a',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <svg style={{ width: '32px', height: '32px', color: '#6b7280' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                     </div>
 
                     <div>
-                        <p className="text-base font-medium text-[var(--text)] mb-1">
+                        <p style={{
+                            fontSize: '1rem',
+                            fontWeight: 500,
+                            color: '#e0e0e0',
+                            marginBottom: '0.25rem',
+                        }}>
                             Drop files here or click to browse
                         </p>
-                        <p className="text-sm text-[var(--text-secondary)]">
+                        <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
                             Support for any file type
                         </p>
                     </div>
@@ -108,37 +122,65 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
                         id="file-upload"
                         multiple
                         onChange={handleFileSelect}
-                        className="hidden"
+                        style={{ display: 'none' }}
                         disabled={isUploading}
                     />
 
-                    <label htmlFor="file-upload">
-                        <Button
-                            type="button"
-                            variant="primary"
-                            isLoading={isUploading}
-                            disabled={isUploading}
-                            onClick={() => document.getElementById('file-upload')?.click()}
-                        >
-                            Select Files
-                        </Button>
-                    </label>
+                    <button
+                        type="button"
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                        disabled={isUploading}
+                        style={{
+                            padding: '0.625rem 1.5rem',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            color: 'white',
+                            backgroundColor: '#3b82f6',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: isUploading ? 'not-allowed' : 'pointer',
+                            opacity: isUploading ? 0.6 : 1,
+                            transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isUploading) e.currentTarget.style.backgroundColor = '#2563eb';
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isUploading) e.currentTarget.style.backgroundColor = '#3b82f6';
+                        }}
+                    >
+                        {isUploading ? 'Uploading...' : 'Select Files'}
+                    </button>
                 </div>
             </div>
 
             {/* Upload Progress */}
             {Object.keys(uploadProgress).length > 0 && (
-                <div className="space-y-2">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {Object.entries(uploadProgress).map(([filename, progress]) => (
-                        <div key={filename} className="space-y-1">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-[var(--text)] truncate">{filename}</span>
-                                <span className="text-[var(--text-secondary)]">{progress}%</span>
+                        <div key={filename} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                                <span style={{
+                                    color: '#e0e0e0',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}>{filename}</span>
+                                <span style={{ color: '#9ca3af' }}>{progress}%</span>
                             </div>
-                            <div className="h-2 bg-[var(--background)] rounded overflow-hidden">
+                            <div style={{
+                                height: '0.5rem',
+                                backgroundColor: '#1a1a1a',
+                                borderRadius: '4px',
+                                overflow: 'hidden',
+                            }}>
                                 <div
-                                    className="h-full bg-[var(--primary)]"
-                                    style={{ width: `${progress}%` }}
+                                    style={{
+                                        height: '100%',
+                                        backgroundColor: '#3b82f6',
+                                        width: `${progress}%`,
+                                        transition: 'width 0.3s',
+                                    }}
                                 />
                             </div>
                         </div>
@@ -148,8 +190,13 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
 
             {/* Error Message */}
             {error && (
-                <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
-                    <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+                <div style={{
+                    padding: '0.75rem',
+                    borderRadius: '4px',
+                    backgroundColor: '#7f1d1d',
+                    border: '1px solid #ef4444',
+                }}>
+                    <p style={{ fontSize: '0.875rem', color: '#fecaca', margin: 0 }}>{error}</p>
                 </div>
             )}
         </div>

@@ -1,8 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
 
 :root {
   /* Professional Color Palette */
@@ -72,6 +69,13 @@ body {
   outline-offset: 2px;
 }
 
+/* Override focus for login page inputs */
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  ring: 0 !important;
+}
+
 /* Spinner animation */
 @keyframes spin {
   from {
@@ -80,4 +84,14 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
 }

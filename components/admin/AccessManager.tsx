@@ -33,7 +33,7 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                 setAccessList(data.access || []);
             }
         } catch (error) {
-            console.error('Failed to fetch access list:', error);
+            // Error handled silently
         }
     };
 
@@ -85,7 +85,7 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                 setAccessList(accessList.filter(a => a.id !== accessId));
             }
         } catch (error) {
-            console.error('Failed to revoke access:', error);
+            // Error handled silently
         }
     };
 
@@ -100,104 +100,288 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Manage File Access" size="lg">
-            <div className="space-y-6">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {/* File Info */}
-                <div className="p-4 rounded bg-[var(--background)] border border-[var(--border)]">
-                    <h3 className="font-medium text-[var(--text)] mb-1">{file.originalFilename}</h3>
-                    <p className="text-sm text-[var(--text-secondary)]">
-                        Short link: <code className="px-2 py-0.5 rounded bg-[var(--surface)] text-[var(--primary)]">
+                <div style={{
+                    padding: '1rem',
+                    borderRadius: '6px',
+                    backgroundColor: '#1a1a1a',
+                    border: '1px solid #3a3a3a',
+                }}>
+                    <h3 style={{
+                        fontWeight: 500,
+                        color: '#e0e0e0',
+                        marginBottom: '0.25rem',
+                        fontSize: '0.95rem',
+                    }}>{file.originalFilename}</h3>
+                    <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>
+                        Short link: <code style={{
+                            padding: '0.125rem 0.5rem',
+                            borderRadius: '3px',
+                            backgroundColor: '#252525',
+                            color: '#3b82f6',
+                            fontSize: '0.8rem',
+                        }}>
                             {window.location.origin}/{file.shortCode}
                         </code>
                     </p>
                 </div>
 
                 {/* Add Access Form */}
-                <form onSubmit={handleAddAccess} className="space-y-4 p-4 rounded border border-[var(--border)]">
-                    <h4 className="font-medium text-[var(--text)]">Grant New Access</h4>
-
-                    <Input
-                        label="User Identifier (Email/Username)"
-                        value={userIdentifier}
-                        onChange={(e) => setUserIdentifier(e.target.value)}
-                        placeholder="user@example.com"
-                        required
-                    />
+                <form onSubmit={handleAddAccess} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    padding: '1rem',
+                    borderRadius: '6px',
+                    border: '1px solid #3a3a3a',
+                }}>
+                    <h4 style={{
+                        fontWeight: 500,
+                        color: '#e0e0e0',
+                        margin: 0,
+                        fontSize: '0.95rem',
+                    }}>Grant New Access</h4>
 
                     <div>
-                        <Input
-                            label="Password"
+                        <label style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>User Identifier (Email/Username)</label>
+                        <input
+                            value={userIdentifier}
+                            onChange={(e) => setUserIdentifier(e.target.value)}
+                            placeholder="user@example.com"
+                            required
+                            style={{
+                                width: '100%',
+                                padding: '0.625rem 0.875rem',
+                                borderRadius: '4px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = '#3b82f6';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = '#3a3a3a';
+                            }}
+                        />
+                    </div>
+
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>Password</label>
+                        <input
                             type="text"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Enter password"
                             required
+                            style={{
+                                width: '100%',
+                                padding: '0.625rem 0.875rem',
+                                borderRadius: '4px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = '#3b82f6';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = '#3a3a3a';
+                            }}
                         />
-                        <Button
+                        <button
                             type="button"
-                            variant="ghost"
-                            size="sm"
                             onClick={handleGeneratePassword}
-                            className="mt-2"
+                            style={{
+                                marginTop: '0.5rem',
+                                padding: '0.375rem 0.75rem',
+                                fontSize: '0.8rem',
+                                color: '#9ca3af',
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'color 0.2s',
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#e0e0e0'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#9ca3af'}
                         >
                             Generate Random Password
-                        </Button>
+                        </button>
                     </div>
 
-                    <Input
-                        label="Expiry Date/Time (Optional)"
-                        type="datetime-local"
-                        value={expiresAt}
-                        onChange={(e) => setExpiresAt(e.target.value)}
-                        helperText="Leave empty for permanent access"
-                    />
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>Expiry Date/Time (Optional)</label>
+                        <input
+                            type="datetime-local"
+                            value={expiresAt}
+                            onChange={(e) => setExpiresAt(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '0.625rem 0.875rem',
+                                borderRadius: '4px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = '#3b82f6';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = '#3a3a3a';
+                            }}
+                        />
+                        <p style={{
+                            marginTop: '0.25rem',
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                        }}>Leave empty for permanent access</p>
+                    </div>
 
                     {error && (
-                        <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
-                            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+                        <div style={{
+                            padding: '0.75rem',
+                            borderRadius: '4px',
+                            backgroundColor: '#7f1d1d',
+                            border: '1px solid #ef4444',
+                        }}>
+                            <p style={{ fontSize: '0.875rem', color: '#fecaca', margin: 0 }}>{error}</p>
                         </div>
                     )}
 
-                    <Button type="submit" variant="primary" isLoading={isLoading} className="w-full">
-                        Grant Access
-                    </Button>
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            color: 'white',
+                            backgroundColor: '#3b82f6',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: isLoading ? 'not-allowed' : 'pointer',
+                            opacity: isLoading ? 0.6 : 1,
+                            transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isLoading) e.currentTarget.style.backgroundColor = '#2563eb';
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isLoading) e.currentTarget.style.backgroundColor = '#3b82f6';
+                        }}
+                    >
+                        {isLoading ? 'Granting Access...' : 'Grant Access'}
+                    </button>
                 </form>
 
                 {/* Access List */}
                 <div>
-                    <h4 className="font-medium text-[var(--text)] mb-3">Current Access Grants</h4>
+                    <h4 style={{
+                        fontWeight: 500,
+                        color: '#e0e0e0',
+                        marginBottom: '0.75rem',
+                        fontSize: '0.95rem',
+                    }}>Current Access Grants</h4>
 
                     {accessList.length === 0 ? (
-                        <p className="text-sm text-[var(--text-secondary)] text-center py-4">
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            textAlign: 'center',
+                            padding: '1rem 0',
+                        }}>
                             No access grants yet
                         </p>
                     ) : (
-                        <div className="space-y-2">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             {accessList.map((access) => (
                                 <div
                                     key={access.id}
-                                    className="flex items-center justify-between p-3 rounded border border-[var(--border)]"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        padding: '0.75rem',
+                                        borderRadius: '4px',
+                                        border: '1px solid #3a3a3a',
+                                        backgroundColor: '#252525',
+                                    }}
                                 >
-                                    <div className="flex-1">
-                                        <p className="font-medium text-[var(--text)]">{access.userIdentifier}</p>
-                                        <div className="flex items-center space-x-2 mt-1">
-                                            <span className="text-xs text-[var(--text-secondary)]">
+                                    <div style={{ flex: 1 }}>
+                                        <p style={{
+                                            fontWeight: 500,
+                                            color: '#e0e0e0',
+                                            margin: 0,
+                                            fontSize: '0.875rem',
+                                        }}>{access.userIdentifier}</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                                            <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
                                                 Accessed {access.accessCount} times
                                             </span>
                                             {access.expiresAt && (
-                                                <Badge variant={isExpired(access.expiresAt) ? 'error' : 'warning'}>
+                                                <span style={{
+                                                    fontSize: '0.7rem',
+                                                    padding: '0.125rem 0.5rem',
+                                                    borderRadius: '3px',
+                                                    backgroundColor: isExpired(access.expiresAt) ? '#7f1d1d' : '#78350f',
+                                                    color: isExpired(access.expiresAt) ? '#fecaca' : '#fcd34d',
+                                                }}>
                                                     {isExpired(access.expiresAt) ? 'Expired' : `Expires ${new Date(access.expiresAt).toLocaleDateString()}`}
-                                                </Badge>
+                                                </span>
                                             )}
                                         </div>
                                     </div>
 
-                                    <Button
-                                        variant="danger"
-                                        size="sm"
+                                    <button
                                         onClick={() => handleRevokeAccess(access.id)}
+                                        style={{
+                                            padding: '0.375rem 0.75rem',
+                                            fontSize: '0.8rem',
+                                            color: '#ef4444',
+                                            backgroundColor: 'transparent',
+                                            border: '1px solid #3a3a3a',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            fontWeight: 500,
+                                            marginLeft: '1rem',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = '#7f1d1d';
+                                            e.currentTarget.style.borderColor = '#ef4444';
+                                            e.currentTarget.style.color = '#ffffff';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                            e.currentTarget.style.borderColor = '#3a3a3a';
+                                            e.currentTarget.style.color = '#ef4444';
+                                        }}
                                     >
                                         Revoke
-                                    </Button>
+                                    </button>
                                 </div>
                             ))}
                         </div>

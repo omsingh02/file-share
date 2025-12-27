@@ -34,7 +34,6 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
         } catch (error) {
-            console.error('Download error:', error);
             alert('Failed to download file');
         } finally {
             setIsDownloading(false);

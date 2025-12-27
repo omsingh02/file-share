@@ -1,0 +1,91 @@
+// Database types
+export interface Database {
+    public: {
+        Tables: {
+            files: {
+                Row: {
+                    id: string;
+                    filename: string;
+                    original_filename: string;
+                    file_path: string;
+                    file_size: number;
+                    mime_type: string;
+                    short_code: string;
+                    uploaded_by: string;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: Omit<Database['public']['Tables']['files']['Row'], 'id' | 'created_at' | 'updated_at'>;
+                Update: Partial<Database['public']['Tables']['files']['Insert']>;
+            };
+            file_access: {
+                Row: {
+                    id: string;
+                    file_id: string;
+                    user_identifier: string;
+                    password_hash: string;
+                    expires_at: string | null;
+                    access_count: number;
+                    last_accessed: string | null;
+                    created_at: string;
+                };
+                Insert: Omit<Database['public']['Tables']['file_access']['Row'], 'id' | 'access_count' | 'last_accessed' | 'created_at'>;
+                Update: Partial<Database['public']['Tables']['file_access']['Insert']>;
+            };
+        };
+    };
+}
+
+// Application types
+export interface FileMetadata {
+    id: string;
+    filename: string;
+    originalFilename: string;
+    filePath: string;
+    fileSize: number;
+    mimeType: string;
+    shortCode: string;
+    uploadedBy: string;
+    createdAt: string;
+    updatedAt: string;
+    shortUrl?: string;
+}
+
+export interface FileAccess {
+    id: string;
+    fileId: string;
+    userIdentifier: string;
+    passwordHash: string;
+    expiresAt: string | null;
+    accessCount: number;
+    lastAccessed: string | null;
+    createdAt: string;
+}
+
+export interface CreateFileAccessInput {
+    fileId: string;
+    userIdentifier: string;
+    password: string;
+    expiresAt?: string;
+}
+
+export interface VerifyAccessInput {
+    shortCode: string;
+    userIdentifier: string;
+    password: string;
+}
+
+export interface VerifyAccessResponse {
+    success: boolean;
+    fileUrl?: string;
+    file?: FileMetadata;
+    error?: string;
+}
+
+export type FileCategory = 'image' | 'video' | 'audio' | 'pdf' | 'document' | 'other';
+
+export interface FileTypeInfo {
+    category: FileCategory;
+    canPreview: boolean;
+    icon: string;
+}

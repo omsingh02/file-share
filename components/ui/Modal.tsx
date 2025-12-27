@@ -33,13 +33,12 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="min-h-screen flex items-center justify-center p-4">
-                {/* Backdrop */}
-                <div
-                    className="fixed inset-0 bg-black/70"
-                    onClick={onClose}
-                />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div
+                className="fixed inset-0 bg-black/70"
+                onClick={onClose}
+            />
 
                 {/* Modal */}
                 <div className={`relative w-full ${sizeStyles[size]} bg-[var(--surface)] rounded border border-[var(--border)] shadow-2xl z-10`}>
@@ -64,7 +63,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                         </svg>
                     </button>
                 </div>
-            </div>
         </div>
     );
 }

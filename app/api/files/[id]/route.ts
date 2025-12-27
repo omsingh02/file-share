@@ -62,7 +62,7 @@ export async function DELETE(
         }
 
         // Delete from storage
-        await adminClient.storage.from('files').remove([file.filename]);
+        await adminClient.storage.from('files').remove([(file as any).filename]);
 
         // Delete from database (this will cascade delete access grants)
         const { error: deleteError } = await adminClient

@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Transform to camelCase
-        const transformedFiles = files.map(file => ({
+        const transformedFiles = (files || []).map((file: any) => ({
             id: file.id,
             filename: file.filename,
             originalFilename: file.original_filename,

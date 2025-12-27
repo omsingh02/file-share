@@ -113,10 +113,11 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
 
                     <label htmlFor="file-upload">
                         <Button
-                            as="span"
+                            type="button"
                             variant="primary"
                             isLoading={isUploading}
                             disabled={isUploading}
+                            onClick={() => document.getElementById('file-upload')?.click()}
                         >
                             Select Files
                         </Button>

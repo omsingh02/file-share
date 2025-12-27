@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
                 mime_type: file.type,
                 short_code: shortCode,
                 uploaded_by: user.id,
-            })
+            } as any)
             .select()
             .single();
 
@@ -66,11 +66,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: true,
             file: {
-                id: fileData.id,
-                filename: fileData.filename,
-                originalFilename: fileData.original_filename,
-                shortCode: fileData.short_code,
-                shortUrl: `${process.env.NEXT_PUBLIC_APP_URL}/${fileData.short_code}`,
+                id: (fileData as any).id,
+                filename: (fileData as any).filename,
+                originalFilename: (fileData as any).original_filename,
+                shortCode: (fileData as any).short_code,
+                shortUrl: `${process.env.NEXT_PUBLIC_APP_URL}/${(fileData as any).short_code}`,
             },
         });
     } catch (error) {

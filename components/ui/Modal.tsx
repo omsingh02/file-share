@@ -36,12 +36,12 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/70"
+                className="fixed inset-0 bg-black/70 -z-10"
                 onClick={onClose}
             />
 
                 {/* Modal */}
-                <div className={`relative w-full ${sizeStyles[size]} bg-[var(--surface)] rounded border border-[var(--border)] shadow-2xl z-10`}>
+                <div className={`relative w-full ${sizeStyles[size]} bg-[var(--surface)] rounded border border-[var(--border)] shadow-2xl`}>
                     {title && (
                         <div className="px-6 py-4 border-b border-[var(--border)]">
                             <h2 className="text-lg font-semibold text-[var(--text)]">{title}</h2>

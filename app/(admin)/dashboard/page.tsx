@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, LoadingSpinner } from '@/components/ui';
 import FileUploader from '@/components/admin/FileUploader';
 import FileList from '@/components/admin/FileList';
+import { FolderOpen, HardDrive, Shield } from 'lucide-react';
 
 export default function DashboardPage() {
     const [stats, setStats] = useState({
@@ -66,8 +67,8 @@ export default function DashboardPage() {
                                 Files uploaded
                             </p>
                         </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center text-3xl shadow-lg">
-                            📁
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center shadow-lg">
+                            <FolderOpen className="w-7 h-7 text-white" />
                         </div>
                     </div>
                 </Card>
@@ -90,8 +91,8 @@ export default function DashboardPage() {
                                 Space used
                             </p>
                         </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--secondary)] to-[var(--accent)] flex items-center justify-center text-3xl shadow-lg">
-                            💾
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--secondary)] to-[var(--accent)] flex items-center justify-center shadow-lg">
+                            <HardDrive className="w-7 h-7 text-white" />
                         </div>
                     </div>
                 </Card>
@@ -114,8 +115,8 @@ export default function DashboardPage() {
                                 Active permissions
                             </p>
                         </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--success)] to-[var(--accent)] flex items-center justify-center text-3xl shadow-lg">
-                            🔐
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--success)] to-[var(--accent)] flex items-center justify-center shadow-lg">
+                            <Shield className="w-7 h-7 text-white" />
                         </div>
                     </div>
                 </Card>
@@ -155,5 +156,5 @@ function formatBytes(bytes: number): string {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }

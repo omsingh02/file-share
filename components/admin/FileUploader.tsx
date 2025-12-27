@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui';
+import { Upload } from 'lucide-react';
 
 interface FileUploaderProps {
     onUploadComplete?: () => void;
@@ -89,8 +90,8 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
         `}
             >
                 <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center text-3xl">
-                        📤
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center">
+                        <Upload className="w-8 h-8 text-white" />
                     </div>
 
                     <div>

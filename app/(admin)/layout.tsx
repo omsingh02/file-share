@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { FileText } from 'lucide-react';
 
 export default async function AdminLayout({
     children,
@@ -22,8 +23,8 @@ export default async function AdminLayout({
                     <div className="flex justify-between items-center h-20">
                         {/* Logo and Title */}
                         <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center text-2xl shadow-lg">
-                                📁
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-lg">
+                                <FileText className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold gradient-text">File Share</h1>

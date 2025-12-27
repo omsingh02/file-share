@@ -2,6 +2,8 @@
 
 This guide will help you deploy your File Share application to Cloudflare Pages with your custom domain.
 
+> **⚠️ IMPORTANT**: This application uses **Cloudflare Pages**, NOT Cloudflare Workers. Make sure you're in the Pages section of your Cloudflare dashboard.
+
 ## Prerequisites
 
 - GitHub account with your code pushed
@@ -22,9 +24,12 @@ git push origin main
 
 ### 2. Create Cloudflare Pages Project
 
+> **Note**: Go to **Workers & Pages** > **Pages** tab (NOT the Workers tab)
+
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Navigate to **Workers & Pages** > **Pages**
-3. Click **Create a project** > **Connect to Git**
+2. Navigate to **Workers & Pages** in the left sidebar
+3. Click the **Pages** tab at the top
+4. Click **Create a project** > **Connect to Git**
 4. Authorize Cloudflare to access your GitHub account
 5. Select your repository (`file-share`)
 6. Configure build settings:

@@ -24,14 +24,14 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
         }
 
-        const totalFiles = files.length;
-        const totalSize = files.reduce((sum, file) => sum + (file.file_size || 0), 0);
+        const totalFiles = files?.length || 0;
+        const totalSize = (files || []).reduce((sum: number, file: any) => sum + (file.file_size || 0), 0);
 
         // Get total access grants
         const { count: totalAccess, error: accessError } = await adminClient
             .from('file_access')
             .select('*', { count: 'exact', head: true })
-            .in('file_id', files.map(f => f.id) || []);
+            .in('file_id', (files || []).map((f: any) => f.id) || []);
 
         if (accessError) {
             console.error('Access error:', accessError);

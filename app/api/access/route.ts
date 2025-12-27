@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Transform to camelCase
-        const transformedAccess = access.map(a => ({
+        const transformedAccess = (access || []).map((a: any) => ({
             id: a.id,
             fileId: a.file_id,
             userIdentifier: a.user_identifier,
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
                 user_identifier: userIdentifier,
                 password_hash: passwordHash,
                 expires_at: expiresAt || null,
-            })
+            } as any)
             .select()
             .single();
 
@@ -144,7 +144,7 @@ export async function DELETE(request: NextRequest) {
             .eq('id', accessId)
             .single();
 
-        if (fetchError || !access || (access.files as any).uploaded_by !== user.id) {
+        if (fetchError || !access || (access as any).files?.uploaded_by !== user.id) {
             return NextResponse.json({ error: 'Access grant not found' }, { status: 404 });
         }
 

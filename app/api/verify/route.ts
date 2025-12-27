@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         const { data: access, error: accessError } = await adminClient
             .from('file_access')
             .select('*')
-            .eq('file_id', file.id)
+            .eq('file_id', (file as any).id)
             .eq('user_identifier', userIdentifier)
             .single();
 
@@ -37,12 +37,12 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if expired
-        if (access.expires_at && new Date(access.expires_at) < new Date()) {
+        if ((access as any).expires_at && new Date((access as any).expires_at) < new Date()) {
             return NextResponse.json({ error: 'Access expired' }, { status: 403 });
         }
 
         // Verify password
-        const isValid = await verifyPassword(password, access.password_hash);
+        const isValid = await verifyPassword(password, (access as any).password_hash);
         if (!isValid) {
             return NextResponse.json({ error: 'Invalid password' }, { status: 403 });
         }
@@ -51,15 +51,15 @@ export async function POST(request: NextRequest) {
         await adminClient
             .from('file_access')
             .update({
-                access_count: access.access_count + 1,
+                access_count: (access as any).access_count + 1,
                 last_accessed: new Date().toISOString(),
-            })
-            .eq('id', access.id);
+            } as any)
+            .eq('id', (access as any).id);
 
         // Get signed URL for file
         const { data: signedUrlData, error: urlError } = await adminClient.storage
             .from('files')
-            .createSignedUrl(file.filename, 3600); // 1 hour expiry
+            .createSignedUrl((file as any).filename, 3600); // 1 hour expiry
 
         if (urlError || !signedUrlData) {
             console.error('Signed URL error:', urlError);
@@ -70,10 +70,10 @@ export async function POST(request: NextRequest) {
             success: true,
             fileUrl: signedUrlData.signedUrl,
             file: {
-                id: file.id,
-                originalFilename: file.original_filename,
-                mimeType: file.mime_type,
-                fileSize: file.file_size,
+                id: (file as any).id,
+                originalFilename: (file as any).original_filename,
+                mimeType: (file as any).mime_type,
+                fileSize: (file as any).file_size,
             },
         });
     } catch (error) {

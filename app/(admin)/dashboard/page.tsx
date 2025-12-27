@@ -38,113 +38,75 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="space-y-10 animate-fadeIn">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="space-y-2">
-                <h1 className="text-4xl font-bold text-[var(--foreground)]">Dashboard</h1>
-                <p className="text-lg text-[var(--foreground-secondary)]">
-                    Manage your shared files and access control
+            <div>
+                <h1 className="text-2xl font-semibold text-[var(--text)]">Dashboard</h1>
+                <p className="text-sm text-[var(--text-secondary)] mt-1">
+                    Manage your files and access control
                 </p>
             </div>
 
-            {/* Stats Grid - Improved spacing and design */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Total Files */}
-                <Card className="p-6 hover:shadow-lg transition-smooth border border-[var(--border)]">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                            <p className="text-sm font-medium text-[var(--foreground-secondary)] mb-2">
-                                Total Files
-                            </p>
+            {/* Stats - Simple Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="p-5">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-[var(--text-secondary)] mb-1">Total Files</p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-4xl font-bold text-[var(--foreground)] mb-1">
-                                    {stats.totalFiles}
-                                </p>
+                                <p className="text-2xl font-semibold text-[var(--text)]">{stats.totalFiles}</p>
                             )}
-                            <p className="text-xs text-[var(--foreground-muted)]">
-                                Files uploaded
-                            </p>
                         </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center shadow-lg">
-                            <FolderOpen className="w-7 h-7 text-white" />
+                        <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                            <FolderOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         </div>
                     </div>
                 </Card>
 
-                {/* Total Storage */}
-                <Card className="p-6 hover:shadow-lg transition-smooth border border-[var(--border)]">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                            <p className="text-sm font-medium text-[var(--foreground-secondary)] mb-2">
-                                Total Storage
-                            </p>
+                <Card className="p-5">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-[var(--text-secondary)] mb-1">Storage Used</p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-4xl font-bold text-[var(--foreground)] mb-1">
-                                    {formatBytes(stats.totalSize)}
-                                </p>
+                                <p className="text-2xl font-semibold text-[var(--text)]">{formatBytes(stats.totalSize)}</p>
                             )}
-                            <p className="text-xs text-[var(--foreground-muted)]">
-                                Space used
-                            </p>
                         </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--secondary)] to-[var(--accent)] flex items-center justify-center shadow-lg">
-                            <HardDrive className="w-7 h-7 text-white" />
+                        <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                            <HardDrive className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         </div>
                     </div>
                 </Card>
 
-                {/* Total Access Grants */}
-                <Card className="p-6 hover:shadow-lg transition-smooth border border-[var(--border)]">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                            <p className="text-sm font-medium text-[var(--foreground-secondary)] mb-2">
-                                Access Grants
-                            </p>
+                <Card className="p-5">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-[var(--text-secondary)] mb-1">Access Grants</p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-4xl font-bold text-[var(--foreground)] mb-1">
-                                    {stats.totalAccess}
-                                </p>
+                                <p className="text-2xl font-semibold text-[var(--text)]">{stats.totalAccess}</p>
                             )}
-                            <p className="text-xs text-[var(--foreground-muted)]">
-                                Active permissions
-                            </p>
                         </div>
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--success)] to-[var(--accent)] flex items-center justify-center shadow-lg">
-                            <Shield className="w-7 h-7 text-white" />
+                        <div className="w-10 h-10 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                            <Shield className="w-5 h-5 text-green-600 dark:text-green-400" />
                         </div>
                     </div>
                 </Card>
             </div>
 
-            {/* File Upload Section */}
-            <Card className="p-8 border border-[var(--border)]">
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">
-                        Upload Files
-                    </h2>
-                    <p className="text-[var(--foreground-secondary)]">
-                        Drag and drop files or click to browse
-                    </p>
-                </div>
+            {/* Upload Section */}
+            <Card className="p-6">
+                <h2 className="text-lg font-semibold text-[var(--text)] mb-4">Upload Files</h2>
                 <FileUploader onUploadComplete={handleUploadComplete} />
             </Card>
 
-            {/* File List Section */}
-            <Card className="p-8 border border-[var(--border)]">
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">
-                        Your Files
-                    </h2>
-                    <p className="text-[var(--foreground-secondary)]">
-                        Manage and share your uploaded files
-                    </p>
-                </div>
+            {/* Files List */}
+            <Card className="p-6">
+                <h2 className="text-lg font-semibold text-[var(--text)] mb-4">Your Files</h2>
                 <FileList key={refreshKey} />
             </Card>
         </div>

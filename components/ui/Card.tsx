@@ -3,20 +3,11 @@ import React from 'react';
 interface CardProps {
     children: React.ReactNode;
     className?: string;
-    glass?: boolean;
-    hover?: boolean;
 }
 
-export function Card({ children, className = '', glass = false, hover = false }: CardProps) {
+export function Card({ children, className = '' }: CardProps) {
     return (
-        <div
-            className={`
-        rounded-2xl
-        ${glass ? 'glass shadow-lg' : 'bg-[var(--background)] shadow-md'}
-        ${hover ? 'hover:shadow-xl transition-smooth cursor-pointer' : ''}
-        ${className}
-      `}
-        >
+        <div className={`bg-white dark:bg-[var(--surface)] border border-[var(--border)] rounded-lg ${className}`}>
             {children}
         </div>
     );

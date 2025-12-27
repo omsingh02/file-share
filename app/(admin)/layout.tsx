@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { FileText } from 'lucide-react';
+import { FileText, LogOut } from 'lucide-react';
 
 export default async function AdminLayout({
     children,
@@ -8,7 +8,6 @@ export default async function AdminLayout({
     children: React.ReactNode;
 }) {
     const supabase = await createClient();
-
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -16,36 +15,34 @@ export default async function AdminLayout({
     }
 
     return (
-        <div className="min-h-screen bg-[var(--background-secondary)]">
-            {/* Admin Header - Improved design */}
-            <header className="bg-[var(--background)] sticky top-0 z-50 border-b border-[var(--border)] shadow-sm backdrop-blur-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-20">
-                        {/* Logo and Title */}
-                        <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-lg">
-                                <FileText className="w-6 h-6 text-white" />
+        <div className="min-h-screen bg-[var(--surface)]">
+            {/* Simple, Clean Header */}
+            <header className="bg-white dark:bg-[var(--surface)] border-b border-[var(--border)]">
+                <div className="max-w-6xl mx-auto px-6 py-4">
+                    <div className="flex items-center justify-between">
+                        {/* Logo */}
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+                                <FileText className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold gradient-text">File Share</h1>
-                                <p className="text-xs text-[var(--foreground-muted)]">Admin Panel</p>
+                                <h1 className="text-lg font-semibold text-[var(--text)]">File Share</h1>
+                                <p className="text-xs text-[var(--text-secondary)]">Admin</p>
                             </div>
                         </div>
 
-                        {/* User Info and Actions */}
-                        <div className="flex items-center space-x-6">
-                            <div className="hidden sm:block text-right">
-                                <p className="text-sm font-medium text-[var(--foreground)]">
-                                    {user.email}
-                                </p>
-                                <p className="text-xs text-[var(--foreground-muted)]">Administrator</p>
-                            </div>
+                        {/* User Info */}
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm text-[var(--text-secondary)] hidden sm:block">
+                                {user.email}
+                            </span>
                             <form action="/api/auth/signout" method="POST">
                                 <button
                                     type="submit"
-                                    className="px-5 py-2.5 text-sm font-medium text-[var(--foreground)] bg-[var(--background-secondary)] hover:bg-[var(--background-tertiary)] rounded-xl transition-smooth border border-[var(--border)]"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface)] rounded-lg"
                                 >
-                                    Sign Out
+                                    <LogOut className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Sign Out</span>
                                 </button>
                             </form>
                         </div>
@@ -54,7 +51,7 @@ export default async function AdminLayout({
             </header>
 
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <main className="max-w-6xl mx-auto px-6 py-8">
                 {children}
             </main>
         </div>

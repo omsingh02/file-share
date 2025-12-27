@@ -16,7 +16,6 @@ export default function ShortCodePage() {
     const [error, setError] = useState('');
     const [fileData, setFileData] = useState<any>(null);
 
-    // Check if already verified in session
     useEffect(() => {
         const sessionKey = `file_access_${shortCode}`;
         const sessionData = sessionStorage.getItem(sessionKey);
@@ -54,7 +53,6 @@ export default function ShortCodePage() {
                 throw new Error(data.error || 'Verification failed');
             }
 
-            // Save to session
             const sessionKey = `file_access_${shortCode}`;
             sessionStorage.setItem(sessionKey, JSON.stringify(data));
 
@@ -72,18 +70,16 @@ export default function ShortCodePage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Animated Background */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-[var(--accent)] opacity-20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-[var(--primary)] opacity-20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
-            </div>
-
-            <Card glass className="w-full max-w-md animate-fadeIn">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--background)]">
+            <Card className="w-full max-w-md p-8">
                 <div className="text-center mb-8">
-                    <div className="text-6xl mb-4">🔐</div>
-                    <h1 className="text-3xl font-bold gradient-text mb-2">Secure File Access</h1>
-                    <p className="text-[var(--foreground-secondary)]">Enter your credentials to access this file</p>
+                    <div className="w-16 h-16 bg-[var(--primary)] rounded mx-auto mb-4 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-2xl font-semibold text-[var(--text)] mb-1">Secure File Access</h1>
+                    <p className="text-sm text-[var(--text-secondary)]">Enter your credentials to access this file</p>
                 </div>
 
                 <form onSubmit={handleVerify} className="space-y-4">
@@ -107,8 +103,8 @@ export default function ShortCodePage() {
                     />
 
                     {error && (
-                        <div className="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800">
-                            <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+                        <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
+                            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
                         </div>
                     )}
 
@@ -123,7 +119,7 @@ export default function ShortCodePage() {
                 </form>
 
                 <div className="mt-6 text-center">
-                    <p className="text-xs text-[var(--foreground-muted)]">
+                    <p className="text-xs text-[var(--text-muted)]">
                         This file is protected. Contact the file owner if you need access.
                     </p>
                 </div>

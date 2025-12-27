@@ -49,7 +49,6 @@ export default function FileList() {
     const copyShortLink = (shortCode: string) => {
         const url = `${window.location.origin}/${shortCode}`;
         navigator.clipboard.writeText(url);
-        // You could add a toast notification here
         alert('Link copied to clipboard!');
     };
 
@@ -69,37 +68,41 @@ export default function FileList() {
     if (files.length === 0) {
         return (
             <div className="text-center py-12">
-                <div className="text-6xl mb-4">📁</div>
-                <p className="text-lg text-[var(--foreground-secondary)]">No files uploaded yet</p>
-                <p className="text-sm text-[var(--foreground-muted)] mt-2">Upload your first file to get started</p>
+                <div className="w-16 h-16 bg-[var(--background)] rounded mx-auto mb-4 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                </div>
+                <p className="text-base text-[var(--text-secondary)]">No files uploaded yet</p>
+                <p className="text-sm text-[var(--text-muted)] mt-1">Upload your first file to get started</p>
             </div>
         );
     }
 
     return (
         <>
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {files.map((file) => {
                     const typeInfo = getFileTypeInfo(file.mimeType);
 
                     return (
                         <div
                             key={file.id}
-                            className="flex items-center justify-between p-4 rounded-lg border border-[var(--border)] hover:bg-[var(--background-secondary)] transition-smooth"
+                            className="flex items-center justify-between p-4 rounded border border-[var(--border)] hover:bg-[var(--background)]"
                         >
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
-                                <div className="text-3xl">{typeInfo.icon}</div>
+                                <div className="text-2xl">{typeInfo.icon}</div>
 
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-medium text-[var(--foreground)] truncate">
+                                    <h3 className="font-medium text-[var(--text)] truncate">
                                         {file.originalFilename}
                                     </h3>
                                     <div className="flex items-center space-x-3 mt-1">
-                                        <span className="text-sm text-[var(--foreground-secondary)]">
+                                        <span className="text-sm text-[var(--text-secondary)]">
                                             {formatFileSize(file.fileSize)}
                                         </span>
                                         <Badge variant="default">{typeInfo.category}</Badge>
-                                        <span className="text-xs text-[var(--foreground-muted)]">
+                                        <span className="text-xs text-[var(--text-muted)]">
                                             {new Date(file.createdAt).toLocaleDateString()}
                                         </span>
                                     </div>
@@ -113,16 +116,16 @@ export default function FileList() {
                                     onClick={() => copyShortLink(file.shortCode)}
                                     title="Copy short link"
                                 >
-                                    🔗 Copy Link
+                                    Copy Link
                                 </Button>
 
                                 <Button
-                                    variant="ghost"
+                                    variant="secondary"
                                     size="sm"
                                     onClick={() => handleManageAccess(file)}
                                     title="Manage access"
                                 >
-                                    🔐 Access
+                                    Access
                                 </Button>
 
                                 <Button
@@ -131,7 +134,7 @@ export default function FileList() {
                                     onClick={() => handleDelete(file.id)}
                                     title="Delete file"
                                 >
-                                    🗑️
+                                    Delete
                                 </Button>
                             </div>
                         </div>

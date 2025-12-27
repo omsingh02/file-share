@@ -33,18 +33,18 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/60"
                 onClick={onClose}
             />
 
             {/* Modal */}
-            <div className={`relative w-full ${sizeStyles[size]} glass rounded-2xl shadow-xl overflow-hidden`}>
+            <div className={`relative w-full ${sizeStyles[size]} bg-[var(--surface)] rounded border border-[var(--border)] shadow-2xl overflow-hidden`}>
                 {title && (
                     <div className="px-6 py-4 border-b border-[var(--border)]">
-                        <h2 className="text-xl font-semibold text-[var(--foreground)]">{title}</h2>
+                        <h2 className="text-lg font-semibold text-[var(--text)]">{title}</h2>
                     </div>
                 )}
 
@@ -55,7 +55,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 rounded-lg hover:bg-[var(--background-secondary)] transition-smooth"
+                    className="absolute top-4 right-4 p-2 rounded hover:bg-[var(--background)] text-[var(--text-secondary)] hover:text-[var(--text)]"
                     aria-label="Close modal"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

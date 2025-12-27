@@ -49,7 +49,7 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                         <img
                             src={fileUrl}
                             alt={file.originalFilename}
-                            className="max-w-full h-auto rounded-lg shadow-lg"
+                            className="max-w-full h-auto rounded"
                         />
                     </div>
                 );
@@ -59,7 +59,7 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                     <video
                         src={fileUrl}
                         controls
-                        className="w-full rounded-lg shadow-lg"
+                        className="w-full rounded"
                         preload="metadata"
                     >
                         Your browser does not support video playback.
@@ -70,8 +70,12 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                 return (
                     <div className="p-8">
                         <div className="text-center mb-6">
-                            <div className="text-6xl mb-4">🎵</div>
-                            <h3 className="text-lg font-medium text-[var(--foreground)]">{file.originalFilename}</h3>
+                            <div className="w-16 h-16 bg-[var(--background)] rounded mx-auto mb-4 flex items-center justify-center">
+                                <svg className="w-8 h-8 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                                </svg>
+                            </div>
+                            <h3 className="text-base font-medium text-[var(--text)]">{file.originalFilename}</h3>
                         </div>
                         <audio
                             src={fileUrl}
@@ -88,7 +92,7 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                 return (
                     <iframe
                         src={fileUrl}
-                        className="w-full h-[80vh] rounded-lg"
+                        className="w-full h-[80vh] rounded"
                         title={file.originalFilename}
                     />
                 );
@@ -98,14 +102,16 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
             default:
                 return (
                     <div className="text-center py-12">
-                        <div className="text-6xl mb-4">{typeInfo.icon}</div>
-                        <h3 className="text-xl font-medium text-[var(--foreground)] mb-2">
+                        <div className="w-16 h-16 bg-[var(--background)] rounded mx-auto mb-4 flex items-center justify-center">
+                            <div className="text-3xl">{typeInfo.icon}</div>
+                        </div>
+                        <h3 className="text-lg font-medium text-[var(--text)] mb-2">
                             {file.originalFilename}
                         </h3>
-                        <p className="text-[var(--foreground-secondary)] mb-6">
+                        <p className="text-[var(--text-secondary)] mb-6">
                             {formatFileSize(file.fileSize)} • {typeInfo.category}
                         </p>
-                        <p className="text-sm text-[var(--foreground-muted)] mb-6">
+                        <p className="text-sm text-[var(--text-muted)] mb-6">
                             Preview not available for this file type
                         </p>
                     </div>
@@ -114,15 +120,15 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
     };
 
     return (
-        <div className="min-h-screen p-4 md:p-8">
+        <div className="min-h-screen p-4 md:p-8 bg-[var(--background)]">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[var(--foreground)] mb-1">
+                        <h1 className="text-xl font-semibold text-[var(--text)] mb-1">
                             {file.originalFilename}
                         </h1>
-                        <p className="text-sm text-[var(--foreground-secondary)]">
+                        <p className="text-sm text-[var(--text-secondary)]">
                             {formatFileSize(file.fileSize)} • {typeInfo.category}
                         </p>
                     </div>
@@ -132,18 +138,18 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                         onClick={handleDownload}
                         isLoading={isDownloading}
                     >
-                        ⬇️ Download
+                        Download
                     </Button>
                 </div>
 
                 {/* Preview */}
-                <Card glass className="overflow-hidden">
+                <Card className="overflow-hidden">
                     {renderPreview()}
                 </Card>
 
                 {/* Info */}
                 <div className="mt-6 text-center">
-                    <p className="text-xs text-[var(--foreground-muted)]">
+                    <p className="text-xs text-[var(--text-muted)]">
                         This file was shared securely. Do not share your access credentials.
                     </p>
                 </div>

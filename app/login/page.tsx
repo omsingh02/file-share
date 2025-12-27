@@ -36,17 +36,16 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Animated Background */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-[var(--primary)] opacity-20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[var(--secondary)] opacity-20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-            </div>
-
-            <Card glass className="w-full max-w-md animate-fadeIn">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold gradient-text mb-2">File Share Admin</h1>
-                    <p className="text-[var(--foreground-secondary)]">Sign in to manage your files</p>
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--background)]">
+            <Card className="w-full max-w-md p-8">
+                <div className="mb-8">
+                    <div className="w-12 h-12 bg-[var(--primary)] rounded mb-4 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-2xl font-semibold text-[var(--text)] mb-1">File Share</h1>
+                    <p className="text-sm text-[var(--text-secondary)]">Sign in to manage your files</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">
@@ -71,8 +70,8 @@ export default function LoginPage() {
                     />
 
                     {error && (
-                        <div className="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800">
-                            <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+                        <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
+                            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
                         </div>
                     )}
 
@@ -85,12 +84,6 @@ export default function LoginPage() {
                         Sign In
                     </Button>
                 </form>
-
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-[var(--foreground-secondary)]">
-                        Secure admin access powered by Supabase
-                    </p>
-                </div>
             </Card>
         </div>
     );

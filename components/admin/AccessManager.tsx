@@ -102,9 +102,9 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
         <Modal isOpen={isOpen} onClose={onClose} title="Manage File Access" size="lg">
             <div className="space-y-6">
                 {/* File Info */}
-                <div className="p-4 rounded-lg bg-[var(--background-secondary)]">
-                    <h3 className="font-medium text-[var(--foreground)] mb-1">{file.originalFilename}</h3>
-                    <p className="text-sm text-[var(--foreground-secondary)]">
+                <div className="p-4 rounded bg-[var(--background)] border border-[var(--border)]">
+                    <h3 className="font-medium text-[var(--text)] mb-1">{file.originalFilename}</h3>
+                    <p className="text-sm text-[var(--text-secondary)]">
                         Short link: <code className="px-2 py-0.5 rounded bg-[var(--surface)] text-[var(--primary)]">
                             {window.location.origin}/{file.shortCode}
                         </code>
@@ -112,8 +112,8 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                 </div>
 
                 {/* Add Access Form */}
-                <form onSubmit={handleAddAccess} className="space-y-4 p-4 rounded-lg border border-[var(--border)]">
-                    <h4 className="font-medium text-[var(--foreground)]">Grant New Access</h4>
+                <form onSubmit={handleAddAccess} className="space-y-4 p-4 rounded border border-[var(--border)]">
+                    <h4 className="font-medium text-[var(--text)]">Grant New Access</h4>
 
                     <Input
                         label="User Identifier (Email/Username)"
@@ -139,7 +139,7 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                             onClick={handleGeneratePassword}
                             className="mt-2"
                         >
-                            🎲 Generate Random Password
+                            Generate Random Password
                         </Button>
                     </div>
 
@@ -152,8 +152,8 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                     />
 
                     {error && (
-                        <div className="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800">
-                            <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+                        <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
+                            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
                         </div>
                     )}
 
@@ -164,10 +164,10 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
 
                 {/* Access List */}
                 <div>
-                    <h4 className="font-medium text-[var(--foreground)] mb-3">Current Access Grants</h4>
+                    <h4 className="font-medium text-[var(--text)] mb-3">Current Access Grants</h4>
 
                     {accessList.length === 0 ? (
-                        <p className="text-sm text-[var(--foreground-secondary)] text-center py-4">
+                        <p className="text-sm text-[var(--text-secondary)] text-center py-4">
                             No access grants yet
                         </p>
                     ) : (
@@ -175,12 +175,12 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                             {accessList.map((access) => (
                                 <div
                                     key={access.id}
-                                    className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)]"
+                                    className="flex items-center justify-between p-3 rounded border border-[var(--border)]"
                                 >
                                     <div className="flex-1">
-                                        <p className="font-medium text-[var(--foreground)]">{access.userIdentifier}</p>
+                                        <p className="font-medium text-[var(--text)]">{access.userIdentifier}</p>
                                         <div className="flex items-center space-x-2 mt-1">
-                                            <span className="text-xs text-[var(--foreground-secondary)]">
+                                            <span className="text-xs text-[var(--text-secondary)]">
                                                 Accessed {access.accessCount} times
                                             </span>
                                             {access.expiresAt && (

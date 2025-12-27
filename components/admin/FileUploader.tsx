@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui';
-import { Upload } from 'lucide-react';
 
 interface FileUploaderProps {
     onUploadComplete?: () => void;
@@ -63,7 +62,6 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
                 setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
             }
 
-            // Clear progress after a delay
             setTimeout(() => {
                 setUploadProgress({});
                 onUploadComplete?.();
@@ -82,23 +80,25 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`
-          border-2 border-dashed rounded-xl p-8 text-center transition-smooth
+          border-2 border-dashed rounded p-8 text-center
           ${isDragging
-                        ? 'border-[var(--primary)] bg-[var(--primary)]/5'
-                        : 'border-[var(--border)] hover:border-[var(--primary)]/50'
+                        ? 'border-[var(--primary)] bg-blue-50 dark:bg-blue-950'
+                        : 'border-[var(--border)] hover:border-[var(--text-muted)]'
                     }
         `}
             >
                 <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center">
-                        <Upload className="w-8 h-8 text-white" />
+                    <div className="w-16 h-16 rounded bg-[var(--primary)] flex items-center justify-center">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
                     </div>
 
                     <div>
-                        <p className="text-lg font-medium text-[var(--foreground)] mb-1">
+                        <p className="text-base font-medium text-[var(--text)] mb-1">
                             Drop files here or click to browse
                         </p>
-                        <p className="text-sm text-[var(--foreground-secondary)]">
+                        <p className="text-sm text-[var(--text-secondary)]">
                             Support for any file type
                         </p>
                     </div>
@@ -132,12 +132,12 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
                     {Object.entries(uploadProgress).map(([filename, progress]) => (
                         <div key={filename} className="space-y-1">
                             <div className="flex justify-between text-sm">
-                                <span className="text-[var(--foreground)] truncate">{filename}</span>
-                                <span className="text-[var(--foreground-secondary)]">{progress}%</span>
+                                <span className="text-[var(--text)] truncate">{filename}</span>
+                                <span className="text-[var(--text-secondary)]">{progress}%</span>
                             </div>
-                            <div className="h-2 bg-[var(--background-secondary)] rounded-full overflow-hidden">
+                            <div className="h-2 bg-[var(--background)] rounded overflow-hidden">
                                 <div
-                                    className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] transition-all duration-300"
+                                    className="h-full bg-[var(--primary)]"
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>
@@ -148,8 +148,8 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
 
             {/* Error Message */}
             {error && (
-                <div className="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800">
-                    <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+                <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
+                    <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
                 </div>
             )}
         </div>

@@ -11,9 +11,9 @@ export function Card({ children, className = '', glass = false, hover = false }:
     return (
         <div
             className={`
-        rounded-xl p-6
-        ${glass ? 'glass' : 'bg-[var(--surface)] border border-[var(--border)]'}
-        ${hover ? 'hover:shadow-lg transition-smooth cursor-pointer' : ''}
+        rounded-2xl
+        ${glass ? 'glass shadow-lg' : 'bg-[var(--background)] shadow-md'}
+        ${hover ? 'hover:shadow-xl transition-smooth cursor-pointer' : ''}
         ${className}
       `}
         >

@@ -37,73 +37,113 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="space-y-8 animate-fadeIn">
+        <div className="space-y-10 animate-fadeIn">
             {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">Dashboard</h1>
-                <p className="text-[var(--foreground-secondary)]">Manage your shared files and access control</p>
+            <div className="space-y-2">
+                <h1 className="text-4xl font-bold text-[var(--foreground)]">Dashboard</h1>
+                <p className="text-lg text-[var(--foreground-secondary)]">
+                    Manage your shared files and access control
+                </p>
             </div>
 
-            {/* Stats */}
+            {/* Stats Grid - Improved spacing and design */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card glass>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-[var(--foreground-secondary)] mb-1">Total Files</p>
+                {/* Total Files */}
+                <Card className="p-6 hover:shadow-lg transition-smooth border border-[var(--border)]">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                            <p className="text-sm font-medium text-[var(--foreground-secondary)] mb-2">
+                                Total Files
+                            </p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-3xl font-bold text-[var(--foreground)]">{stats.totalFiles}</p>
+                                <p className="text-4xl font-bold text-[var(--foreground)] mb-1">
+                                    {stats.totalFiles}
+                                </p>
                             )}
+                            <p className="text-xs text-[var(--foreground-muted)]">
+                                Files uploaded
+                            </p>
                         </div>
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center text-2xl">
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center text-3xl shadow-lg">
                             📁
                         </div>
                     </div>
                 </Card>
 
-                <Card glass>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-[var(--foreground-secondary)] mb-1">Total Storage</p>
+                {/* Total Storage */}
+                <Card className="p-6 hover:shadow-lg transition-smooth border border-[var(--border)]">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                            <p className="text-sm font-medium text-[var(--foreground-secondary)] mb-2">
+                                Total Storage
+                            </p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-3xl font-bold text-[var(--foreground)]">{formatBytes(stats.totalSize)}</p>
+                                <p className="text-4xl font-bold text-[var(--foreground)] mb-1">
+                                    {formatBytes(stats.totalSize)}
+                                </p>
                             )}
+                            <p className="text-xs text-[var(--foreground-muted)]">
+                                Space used
+                            </p>
                         </div>
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[var(--secondary)] to-[var(--secondary-dark)] flex items-center justify-center text-2xl">
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--secondary)] to-[var(--accent)] flex items-center justify-center text-3xl shadow-lg">
                             💾
                         </div>
                     </div>
                 </Card>
 
-                <Card glass>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-[var(--foreground-secondary)] mb-1">Total Access Grants</p>
+                {/* Total Access Grants */}
+                <Card className="p-6 hover:shadow-lg transition-smooth border border-[var(--border)]">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                            <p className="text-sm font-medium text-[var(--foreground-secondary)] mb-2">
+                                Access Grants
+                            </p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-3xl font-bold text-[var(--foreground)]">{stats.totalAccess}</p>
+                                <p className="text-4xl font-bold text-[var(--foreground)] mb-1">
+                                    {stats.totalAccess}
+                                </p>
                             )}
+                            <p className="text-xs text-[var(--foreground-muted)]">
+                                Active permissions
+                            </p>
                         </div>
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] flex items-center justify-center text-2xl">
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--success)] to-[var(--accent)] flex items-center justify-center text-3xl shadow-lg">
                             🔐
                         </div>
                     </div>
                 </Card>
             </div>
 
-            {/* File Upload */}
-            <Card glass>
-                <h2 className="text-xl font-semibold text-[var(--foreground)] mb-4">Upload Files</h2>
+            {/* File Upload Section */}
+            <Card className="p-8 border border-[var(--border)]">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">
+                        Upload Files
+                    </h2>
+                    <p className="text-[var(--foreground-secondary)]">
+                        Drag and drop files or click to browse
+                    </p>
+                </div>
                 <FileUploader onUploadComplete={handleUploadComplete} />
             </Card>
 
-            {/* File List */}
-            <Card glass>
-                <h2 className="text-xl font-semibold text-[var(--foreground)] mb-4">Your Files</h2>
+            {/* File List Section */}
+            <Card className="p-8 border border-[var(--border)]">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">
+                        Your Files
+                    </h2>
+                    <p className="text-[var(--foreground-secondary)]">
+                        Manage and share your uploaded files
+                    </p>
+                </div>
                 <FileList key={refreshKey} />
             </Card>
         </div>
@@ -115,5 +155,5 @@ function formatBytes(bytes: number): string {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }

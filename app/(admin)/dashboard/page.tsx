@@ -48,54 +48,54 @@ export default function DashboardPage() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="p-5">
-                    <div className="flex items-start justify-between">
+                <Card className="p-6">
+                    <div className="flex items-center justify-between">
                         <div className="flex-1">
-                            <p className="text-xs text-[var(--text-secondary)] mb-1">Total Files</p>
+                            <p className="text-sm text-[var(--text-secondary)] mb-2">Total Files</p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-2xl font-semibold text-[var(--text)]">{stats.totalFiles}</p>
+                                <p className="text-3xl font-semibold text-[var(--text)]">{stats.totalFiles}</p>
                             )}
                         </div>
-                        <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950 rounded flex items-center justify-center">
-                            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded flex items-center justify-center">
+                            <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
                         </div>
                     </div>
                 </Card>
 
-                <Card className="p-5">
-                    <div className="flex items-start justify-between">
+                <Card className="p-6">
+                    <div className="flex items-center justify-between">
                         <div className="flex-1">
-                            <p className="text-xs text-[var(--text-secondary)] mb-1">Storage Used</p>
+                            <p className="text-sm text-[var(--text-secondary)] mb-2">Storage Used</p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-2xl font-semibold text-[var(--text)]">{formatBytes(stats.totalSize)}</p>
+                                <p className="text-3xl font-semibold text-[var(--text)]">{formatBytes(stats.totalSize)}</p>
                             )}
                         </div>
-                        <div className="w-10 h-10 bg-purple-50 dark:bg-purple-950 rounded flex items-center justify-center">
-                            <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded flex items-center justify-center">
+                            <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                             </svg>
                         </div>
                     </div>
                 </Card>
 
-                <Card className="p-5">
-                    <div className="flex items-start justify-between">
+                <Card className="p-6">
+                    <div className="flex items-center justify-between">
                         <div className="flex-1">
-                            <p className="text-xs text-[var(--text-secondary)] mb-1">Access Grants</p>
+                            <p className="text-sm text-[var(--text-secondary)] mb-2">Access Grants</p>
                             {isLoading ? (
                                 <LoadingSpinner size="sm" />
                             ) : (
-                                <p className="text-2xl font-semibold text-[var(--text)]">{stats.totalAccess}</p>
+                                <p className="text-3xl font-semibold text-[var(--text)]">{stats.totalAccess}</p>
                             )}
                         </div>
-                        <div className="w-10 h-10 bg-green-50 dark:bg-green-950 rounded flex items-center justify-center">
-                            <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded flex items-center justify-center">
+                            <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>

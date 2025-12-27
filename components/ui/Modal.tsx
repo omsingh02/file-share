@@ -33,35 +33,37 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-            {/* Backdrop */}
-            <div
-                className="fixed inset-0 bg-black/70"
-                onClick={onClose}
-            />
-
-            {/* Modal */}
-            <div className={`relative w-full ${sizeStyles[size]} bg-[var(--surface)] rounded border border-[var(--border)] shadow-2xl my-8`}>
-                {title && (
-                    <div className="px-6 py-4 border-b border-[var(--border)]">
-                        <h2 className="text-lg font-semibold text-[var(--text)]">{title}</h2>
-                    </div>
-                )}
-
-                <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-                    {children}
-                </div>
-
-                {/* Close button */}
-                <button
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="min-h-screen flex items-center justify-center p-4">
+                {/* Backdrop */}
+                <div
+                    className="fixed inset-0 bg-black/70"
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 rounded hover:bg-[var(--background)] text-[var(--text-secondary)] hover:text-[var(--text)]"
-                    aria-label="Close modal"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                />
+
+                {/* Modal */}
+                <div className={`relative w-full ${sizeStyles[size]} bg-[var(--surface)] rounded border border-[var(--border)] shadow-2xl z-10`}>
+                    {title && (
+                        <div className="px-6 py-4 border-b border-[var(--border)]">
+                            <h2 className="text-lg font-semibold text-[var(--text)]">{title}</h2>
+                        </div>
+                    )}
+
+                    <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                        {children}
+                    </div>
+
+                    {/* Close button */}
+                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4 p-2 rounded hover:bg-[var(--background)] text-[var(--text-secondary)] hover:text-[var(--text)]"
+                        aria-label="Close modal"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     );

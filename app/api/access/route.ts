@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { hashPassword } from '@/lib/utils/crypto';
+import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
 
 export async function GET(request: NextRequest) {
     try {
@@ -63,6 +64,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
+        // Rate limiting: 20 access grants per minute per IP
+        const identifier = getClientIdentifier(request);
+        const { success } = rateLimit(identifier, 20, 60 * 1000);
+        
+        if (!success) {
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                { status: 429 }
+            );
+        }
+
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
 

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateShortCode } from '@/lib/utils/shortCode';
+import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
+import { validateFile } from '@/lib/utils/fileTypes';
 
 // Helper function to detect MIME type from file extension
 function getMimeTypeFromExtension(filename: string, browserMimeType: string): string {
@@ -54,6 +56,13 @@ function getMimeTypeFromExtension(filename: string, browserMimeType: string): st
         'wav': 'audio/wav',
         'ogg': 'audio/ogg',
         'oga': 'audio/ogg',
+        
+        // Archives
+        'zip': 'application/zip',
+        'tar': 'application/x-tar',
+        'gz': 'application/gzip',
+        'rar': 'application/x-rar-compressed',
+        '7z': 'application/x-7z-compressed',
     };
     
     // If we have a mapped MIME type for this extension, use it
@@ -63,6 +72,17 @@ function getMimeTypeFromExtension(filename: string, browserMimeType: string): st
 
 export async function POST(request: NextRequest) {
     try {
+        // Rate limiting: 10 uploads per 5 minutes per IP
+        const identifier = getClientIdentifier(request);
+        const { success } = rateLimit(identifier, 10, 5 * 60 * 1000);
+        
+        if (!success) {
+            return NextResponse.json(
+                { error: 'Upload limit exceeded. Please try again later.' },
+                { status: 429 }
+            );
+        }
+
         // Verify admin authentication
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
@@ -77,6 +97,15 @@ export async function POST(request: NextRequest) {
 
         if (!file) {
             return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+        }
+
+        // Validate file size, type, and extension
+        const validation = validateFile(file);
+        if (!validation.valid) {
+            return NextResponse.json(
+                { error: validation.error },
+                { status: 400 }
+            );
         }
 
         // Generate unique filename and short code

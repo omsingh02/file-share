@@ -2,9 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyPassword } from '@/lib/utils/crypto';
 import { generateAccessToken, hashToken } from '@/lib/utils/tokens';
+import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
 
 export async function POST(request: NextRequest) {
     try {
+        // Rate limiting: 5 attempts per minute per IP
+        const identifier = getClientIdentifier(request);
+        const { success, remaining } = rateLimit(identifier, 5, 60 * 1000);
+        
+        if (!success) {
+            return NextResponse.json(
+                { error: 'Too many attempts. Please try again later.' },
+                { status: 429, headers: { 'X-RateLimit-Remaining': '0' } }
+            );
+        }
+
         const body = await request.json();
         const { shortCode, userIdentifier, password, sessionToken } = body;
 

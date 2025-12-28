@@ -1,49 +1,14 @@
-'use client';
+import { createClient } from '@/lib/supabase/server';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-
-export default function AdminLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
-    const supabase = createClient();
-
-    useEffect(() => {
-        const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login');
-            } else {
-                setUser(user);
-            }
-            setLoading(false);
-        };
-        checkUser();
-    }, [router, supabase]);
-
-    if (loading) {
-        return (
-            <div style={{
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#1a1a1a',
-            }}>
-                <div style={{ color: '#9ca3af' }}>Loading...</div>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return null;
-    }
+    // Middleware ensures user is authenticated
+    // We can safely get user data here for display purposes
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a' }}>

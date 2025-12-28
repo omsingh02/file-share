@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui';
+import { validateFile, formatFileSize, getMaxFileSize } from '@/lib/utils/fileTypes';
 
 interface FileUploaderProps {
     onUploadComplete?: () => void;
@@ -44,6 +45,12 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
 
         try {
             for (const file of files) {
+                // Client-side validation
+                const validation = validateFile(file);
+                if (!validation.valid) {
+                    throw new Error(validation.error);
+                }
+
                 const formData = new FormData();
                 formData.append('file', file);
 
@@ -113,7 +120,7 @@ export default function FileUploader({ onUploadComplete }: FileUploaderProps) {
                             Drop files here or click to browse
                         </p>
                         <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
-                            Support for any file type
+                            Max {formatFileSize(getMaxFileSize())} • Images, Videos, Audio, Documents, PDFs
                         </p>
                     </div>
 

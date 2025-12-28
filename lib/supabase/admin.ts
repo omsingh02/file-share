@@ -11,6 +11,11 @@ export function createAdminClient() {
                 autoRefreshToken: false,
                 persistSession: false,
             },
+            realtime: {
+                params: {
+                    eventsPerSecond: 10,
+                },
+            },
         }
     );
 }

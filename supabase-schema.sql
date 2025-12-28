@@ -40,6 +40,10 @@ CREATE INDEX IF NOT EXISTS idx_file_access_user_identifier ON file_access(user_i
 -- Enable Realtime for file_access table (for instant revocation notifications)
 ALTER PUBLICATION supabase_realtime ADD TABLE file_access;
 
+-- Set REPLICA IDENTITY FULL so DELETE events include all columns
+-- This is required for real-time access revocation to work properly
+ALTER TABLE file_access REPLICA IDENTITY FULL;
+
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

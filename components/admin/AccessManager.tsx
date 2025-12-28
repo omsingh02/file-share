@@ -17,6 +17,7 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
     const [userIdentifier, setUserIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [expiresAt, setExpiresAt] = useState('');
+    const [maxDownloads, setMaxDownloads] = useState('');
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -51,6 +52,7 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                     userIdentifier,
                     password,
                     expiresAt: expiresAt || null,
+                    maxDownloads: maxDownloads ? parseInt(maxDownloads) : null,
                 }),
             });
 
@@ -63,6 +65,7 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
             setUserIdentifier('');
             setPassword('');
             setExpiresAt('');
+            setMaxDownloads('');
 
             // Refresh list
             await fetchAccessList();
@@ -175,6 +178,38 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                     </div>
 
                     <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>Max Downloads (Optional)</label>
+                        <input
+                            type="number"
+                            min="1"
+                            value={maxDownloads}
+                            onChange={(e) => setMaxDownloads(e.target.value)}
+                            placeholder="Unlimited"
+                            style={{
+                                width: '100%',
+                                padding: '0.625rem 0.875rem',
+                                borderRadius: '4px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = '#3b82f6';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = '#3a3a3a';
+                            }}
+                        />
+                    </div>
+
+                    {error && (
                         <label style={{
                             display: 'block',
                             fontSize: '0.875rem',
@@ -337,10 +372,21 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                                             margin: 0,
                                             fontSize: '0.875rem',
                                         }}>{access.userIdentifier}</p>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
                                             <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
                                                 Accessed {access.accessCount} times
                                             </span>
+                                            {access.maxDownloads && (
+                                                <span style={{
+                                                    fontSize: '0.7rem',
+                                                    padding: '0.125rem 0.5rem',
+                                                    borderRadius: '3px',
+                                                    backgroundColor: (access.downloadCount || 0) >= access.maxDownloads ? '#7f1d1d' : '#1e3a8a',
+                                                    color: (access.downloadCount || 0) >= access.maxDownloads ? '#fecaca' : '#93c5fd',
+                                                }}>
+                                                    {access.downloadCount || 0}/{access.maxDownloads} downloads
+                                                </span>
+                                            )}
                                             {access.expiresAt && (
                                                 <span style={{
                                                     fontSize: '0.7rem',

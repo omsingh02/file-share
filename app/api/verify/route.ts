@@ -5,6 +5,28 @@ import { generateAccessToken, hashToken } from '@/lib/utils/tokens';
 import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
 import { sanitizeUserIdentifier, sanitizeShortCode } from '@/lib/utils/sanitization';
 
+// Helper to log access attempts
+async function logAccess(
+    fileId: string,
+    userIdentifier: string,
+    granted: boolean,
+    request: NextRequest
+) {
+    const adminClient = createAdminClient();
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
+               request.headers.get('x-real-ip') || 
+               'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
+    
+    await adminClient.from('access_log').insert({
+        file_id: fileId,
+        user_identifier: userIdentifier,
+        access_granted: granted,
+        ip_address: ip,
+        user_agent: userAgent,
+    } as any);
+}
+
 export async function POST(request: NextRequest) {
     try {
         // Rate limiting: 5 attempts per minute per IP
@@ -44,6 +66,8 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (fileError || !file) {
+            // Log failed attempt (file not found)
+            await logAccess('00000000-0000-0000-0000-000000000000', sanitizedUserIdentifier, false, request);
             return NextResponse.json({ error: 'File not found' }, { status: 404 });
         }
 
@@ -56,12 +80,22 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (accessError || !access) {
+            await logAccess((file as any).id, sanitizedUserIdentifier, false, request);
             return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 
         // Check if expired
         if ((access as any).expires_at && new Date((access as any).expires_at) < new Date()) {
+            await logAccess((file as any).id, sanitizedUserIdentifier, false, request);
             return NextResponse.json({ error: 'Access expired' }, { status: 403 });
+        }
+
+        // Check download limit
+        const maxDownloads = (access as any).max_downloads;
+        const downloadCount = (access as any).download_count || 0;
+        if (maxDownloads !== null && downloadCount >= maxDownloads) {
+            await logAccess((file as any).id, sanitizedUserIdentifier, false, request);
+            return NextResponse.json({ error: 'Download limit reached' }, { status: 403 });
         }
 
         let newSessionToken: string | null = null;
@@ -76,12 +110,14 @@ export async function POST(request: NextRequest) {
 
             // Check if session expired
             if ((access as any).session_expires_at && new Date((access as any).session_expires_at) < new Date()) {
+                await logAccess((file as any).id, sanitizedUserIdentifier, false, request);
                 return NextResponse.json({ error: 'Session expired' }, { status: 403 });
             }
         } else if (password) {
             // Password authentication - create new session
             const isValid = await verifyPassword(password, (access as any).password_hash);
             if (!isValid) {
+                await logAccess((file as any).id, sanitizedUserIdentifier, false, request);
                 return NextResponse.json({ error: 'Invalid password' }, { status: 403 });
             }
 
@@ -90,12 +126,27 @@ export async function POST(request: NextRequest) {
             const tokenHash = await hashToken(newSessionToken);
             const sessionExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-            // Store hashed token in database
+            // Store hashed token and increment download count
             await adminClient
                 .from('file_access')
                 .update({
                     session_token: tokenHash,
                     session_expires_at: sessionExpiresAt,
+                    download_count: downloadCount + 1,
+                    last_accessed: new Date().toISOString(),
+                } as never)
+                .eq('id', (access as any).id);
+        }
+
+        // Log successful access
+        await logAccess((file as any).id, sanitizedUserIdentifier, true, request);
+
+        // Update last_accessed timestamp if using session token (don't increment download count)
+        if (sessionToken && !newSessionToken) {
+            await adminClient
+                .from('file_access')
+                .update({
+                    last_accessed: new Date().toISOString(),
                 } as never)
                 .eq('id', (access as any).id);
         }

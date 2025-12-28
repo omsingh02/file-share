@@ -53,6 +53,8 @@ export async function GET(request: NextRequest) {
             passwordHash: a.password_hash,
             expiresAt: a.expires_at,
             accessCount: a.access_count,
+            downloadCount: a.download_count,
+            maxDownloads: a.max_downloads,
             lastAccessed: a.last_accessed,
             createdAt: a.created_at,
         }));
@@ -84,7 +86,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { fileId, userIdentifier, password, expiresAt } = body;
+        const { fileId, userIdentifier, password, expiresAt, maxDownloads } = body;
 
         if (!fileId || !userIdentifier || !password) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -120,6 +122,7 @@ export async function POST(request: NextRequest) {
                 user_identifier: sanitizedUserIdentifier,
                 password_hash: passwordHash,
                 expires_at: expiresAt || null,
+                max_downloads: maxDownloads || null,
             } as any)
             .select()
             .single();

@@ -17,13 +17,19 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 /**
- * Generates a random password
+ * Generates a cryptographically secure random password
  */
 export function generateRandomPassword(length: number = 12): string {
     const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    const charsetLength = charset.length;
     let password = '';
+    
+    // Use crypto.getRandomValues for cryptographically secure randomness
+    const randomValues = new Uint32Array(length);
+    crypto.getRandomValues(randomValues);
+    
     for (let i = 0; i < length; i++) {
-        password += charset.charAt(Math.floor(Math.random() * charset.length));
+        password += charset.charAt(randomValues[i] % charsetLength);
     }
     return password;
 }

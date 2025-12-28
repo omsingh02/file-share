@@ -60,6 +60,8 @@ export interface FileAccess {
     passwordHash: string;
     expiresAt: string | null;
     accessCount: number;
+    downloadCount?: number;
+    maxDownloads?: number | null;
     lastAccessed: string | null;
     createdAt: string;
 }

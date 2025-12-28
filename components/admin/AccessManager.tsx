@@ -183,38 +183,6 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                             fontSize: '0.875rem',
                             color: '#9ca3af',
                             marginBottom: '0.5rem',
-                        }}>Max Downloads (Optional)</label>
-                        <input
-                            type="number"
-                            min="1"
-                            value={maxDownloads}
-                            onChange={(e) => setMaxDownloads(e.target.value)}
-                            placeholder="Unlimited"
-                            style={{
-                                width: '100%',
-                                padding: '0.625rem 0.875rem',
-                                borderRadius: '4px',
-                                border: '1px solid #3a3a3a',
-                                backgroundColor: '#1a1a1a',
-                                color: '#e0e0e0',
-                                fontSize: '0.875rem',
-                                outline: 'none',
-                            }}
-                            onFocus={(e) => {
-                                e.target.style.borderColor = '#3b82f6';
-                            }}
-                            onBlur={(e) => {
-                                e.target.style.borderColor = '#3a3a3a';
-                            }}
-                        />
-                    </div>
-
-                    {error && (
-                        <label style={{
-                            display: 'block',
-                            fontSize: '0.875rem',
-                            color: '#9ca3af',
-                            marginBottom: '0.5rem',
                         }}>Password</label>
                         <input
                             type="text"
@@ -257,6 +225,38 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                         >
                             Generate Random Password
                         </button>
+                    </div>
+
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>Max Downloads (Optional)</label>
+                        <input
+                            type="number"
+                            min="1"
+                            value={maxDownloads}
+                            onChange={(e) => setMaxDownloads(e.target.value)}
+                            placeholder="Unlimited"
+                            style={{
+                                width: '100%',
+                                padding: '0.625rem 0.875rem',
+                                borderRadius: '4px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = '#3b82f6';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = '#3a3a3a';
+                            }}
+                        />
                     </div>
 
                     <div>

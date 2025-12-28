@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import DocViewer, { DocViewerRenderers } from 'react-doc-viewer';
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import { getFileTypeInfo, formatFileSize } from '@/lib/utils/fileTypes';
 
 interface FilePreviewProps {

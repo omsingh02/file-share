@@ -126,14 +126,12 @@ export async function POST(request: NextRequest) {
             const tokenHash = await hashToken(newSessionToken);
             const sessionExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-            // Store hashed token and increment download count
+            // Store hashed token (don't increment counts yet - do it once below)
             await adminClient
                 .from('file_access')
                 .update({
                     session_token: tokenHash,
                     session_expires_at: sessionExpiresAt,
-                    download_count: downloadCount + 1,
-                    last_accessed: new Date().toISOString(),
                 } as never)
                 .eq('id', (access as any).id);
         }
@@ -141,21 +139,14 @@ export async function POST(request: NextRequest) {
         // Log successful access
         await logAccess((file as any).id, sanitizedUserIdentifier, true, request);
 
-        // Update last_accessed timestamp if using session token (don't increment download count)
-        if (sessionToken && !newSessionToken) {
-            await adminClient
-                .from('file_access')
-                .update({
-                    last_accessed: new Date().toISOString(),
-                } as never)
-                .eq('id', (access as any).id);
-        }
-
-        // Update access count
+        // Update counters and timestamp - this happens on EVERY successful verification
+        // access_count = total page views (including refreshes with session token)
+        // download_count = only incremented on new password auth (actual new downloads)
         await adminClient
             .from('file_access')
             .update({
                 access_count: (access as any).access_count + 1,
+                download_count: newSessionToken ? downloadCount + 1 : downloadCount, // Only increment on new session
                 last_accessed: new Date().toISOString(),
             } as never)
             .eq('id', (access as any).id);

@@ -18,6 +18,7 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
     const { fileUrl, file } = fileData;
     const typeInfo = getFileTypeInfo(file.mimeType);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
     const [textContent, setTextContent] = useState<string>('');
     const [isLoadingText, setIsLoadingText] = useState(false);
 
@@ -33,9 +34,9 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                           file.mimeType.includes('ms-excel') ||
                           file.mimeType.includes('ms-powerpoint');
 
-    // Load text content for text-based files
+    // Load text content for text-based files (only when preview is shown)
     useEffect(() => {
-        if (isTextFile) {
+        if (isTextFile && showPreview && !textContent) {
             setIsLoadingText(true);
             fetch(fileUrl)
                 .then(res => res.text())
@@ -43,7 +44,7 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                 .catch(() => setTextContent('Failed to load file content'))
                 .finally(() => setIsLoadingText(false));
         }
-    }, [fileUrl, isTextFile]);
+    }, [fileUrl, isTextFile, showPreview, textContent]);
 
     const handleDownload = async () => {
         setIsDownloading(true);
@@ -276,45 +277,126 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                         </p>
                     </div>
 
-                    <button
-                        onClick={handleDownload}
-                        disabled={isDownloading}
-                        style={{
-                            padding: '0.625rem 1.5rem',
-                            fontSize: '0.875rem',
-                            fontWeight: 500,
-                            color: 'white',
-                            backgroundColor: '#3b82f6',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: isDownloading ? 'not-allowed' : 'pointer',
-                            opacity: isDownloading ? 0.6 : 1,
-                            transition: 'all 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                            if (!isDownloading) e.currentTarget.style.backgroundColor = '#2563eb';
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!isDownloading) e.currentTarget.style.backgroundColor = '#3b82f6';
-                        }}
-                    >
-                        {isDownloading ? 'Downloading...' : 'Download'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <button
+                            onClick={() => setShowPreview(!showPreview)}
+                            style={{
+                                padding: '0.625rem 1.5rem',
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                color: showPreview ? 'white' : '#e0e0e0',
+                                backgroundColor: showPreview ? '#059669' : 'transparent',
+                                border: '1px solid',
+                                borderColor: showPreview ? '#059669' : '#3a3a3a',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!showPreview) {
+                                    e.currentTarget.style.borderColor = '#4b5563';
+                                    e.currentTarget.style.backgroundColor = '#1f2937';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!showPreview) {
+                                    e.currentTarget.style.borderColor = '#3a3a3a';
+                                    e.currentTarget.style.backgroundColor = 'transparent';
+                                }
+                            }}
+                        >
+                            {showPreview ? 'Hide Preview' : 'Show Preview'}
+                        </button>
+
+                        <button
+                            onClick={handleDownload}
+                            disabled={isDownloading}
+                            style={{
+                                padding: '0.625rem 1.5rem',
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                color: 'white',
+                                backgroundColor: '#3b82f6',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: isDownloading ? 'not-allowed' : 'pointer',
+                                opacity: isDownloading ? 0.6 : 1,
+                                transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!isDownloading) e.currentTarget.style.backgroundColor = '#2563eb';
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isDownloading) e.currentTarget.style.backgroundColor = '#3b82f6';
+                            }}
+                        >
+                            {isDownloading ? 'Downloading...' : 'Download'}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Preview */}
-                <div style={{
-                    backgroundColor: '#2a2a2a',
-                    borderRadius: '8px',
-                    border: '1px solid #3a3a3a',
-                    overflow: 'hidden',
-                    height: '75vh',
-                }}>
-                    {renderPreview()}
-                </div>
+                {showPreview && (
+                    <div style={{
+                        backgroundColor: '#2a2a2a',
+                        borderRadius: '8px',
+                        border: '1px solid #3a3a3a',
+                        overflow: 'hidden',
+                        height: '75vh',
+                        marginBottom: '1.5rem',
+                    }}>
+                        {renderPreview()}
+                    </div>
+                )}
+
+                {/* File Info Card (shown when preview is hidden) */}
+                {!showPreview && (
+                    <div style={{
+                        backgroundColor: '#2a2a2a',
+                        borderRadius: '8px',
+                        border: '1px solid #3a3a3a',
+                        padding: '3rem 2rem',
+                        textAlign: 'center',
+                        marginBottom: '1.5rem',
+                    }}>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            backgroundColor: '#1a1a1a',
+                            borderRadius: '8px',
+                            margin: '0 auto 1.5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <div style={{ fontSize: '2.5rem', opacity: 0.7 }}>{typeInfo.icon}</div>
+                        </div>
+                        <h3 style={{
+                            fontSize: '1.125rem',
+                            fontWeight: 500,
+                            color: '#e0e0e0',
+                            marginBottom: '0.5rem',
+                        }}>
+                            {file.originalFilename}
+                        </h3>
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>
+                            {formatFileSize(file.fileSize)} • {typeInfo.category}
+                        </p>
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#6b7280',
+                        }}>
+                            Click "Show Preview" to view the file
+                        </p>
+                    </div>
+                )}
 
                 {/* Info */}
-                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                <div style={{ textAlign: 'center' }}>
                     <p style={{
                         fontSize: '0.75rem',
                         color: '#6b7280',

@@ -60,45 +60,32 @@ export async function GET(request: NextRequest) {
                     if (channel) channel.unsubscribe();
                 };
 
-                // Subscribe to changes in file_access table for this specific user
+                // Subscribe to DELETE events for this access record (manual revocation)
                 channel = adminClient
                     .channel(`access_${shortCode}_${userIdentifier}`)
                     .on(
                         'postgres_changes',
                         {
-                            event: '*',
+                            event: 'DELETE',
                             schema: 'public',
                             table: 'file_access',
                             filter: `id=eq.${(accessRecord as any).id}`,
                         },
                         async (payload) => {
-                            // Check if this user's access was affected
-                            if (payload.eventType === 'DELETE') {
-                                // Access was deleted - revoke immediately
-                                controller.enqueue(
-                                    encoder.encode(`data: ${JSON.stringify({ revoked: true })}\n\n`)
-                                );
-                                cleanup();
-                                controller.close();
-                            } else if (payload.eventType === 'UPDATE') {
-                                const updated = payload.new as any;
-                                // Check if expired
-                                if (updated.expires_at && new Date(updated.expires_at) < new Date()) {
-                                    controller.enqueue(
-                                        encoder.encode(`data: ${JSON.stringify({ expired: true })}\n\n`)
-                                    );
-                                    cleanup();
-                                    controller.close();
-                                }
-                            }
+                            // Access was deleted - revoke immediately
+                            controller.enqueue(
+                                encoder.encode(`data: ${JSON.stringify({ revoked: true })}\n\n`)
+                            );
+                            cleanup();
+                            controller.close();
                         }
                 )
-                .subscribe();                // Periodically check access status (fallback in case realtime fails)
+                .subscribe();                // Periodically check if access was deleted (fallback in case realtime fails)
                 checkInterval = setInterval(async () => {
                     try {
                         const { data: currentAccess, error } = await adminClient
                             .from('file_access')
-                            .select('expires_at')
+                            .select('id')
                             .eq('id', (accessRecord as any).id)
                             .maybeSingle();
 
@@ -109,18 +96,11 @@ export async function GET(request: NextRequest) {
                             );
                             cleanup();
                             controller.close();
-                        } else if ((currentAccess as any).expires_at && new Date((currentAccess as any).expires_at) < new Date()) {
-                            // Access expired
-                            controller.enqueue(
-                                encoder.encode(`data: ${JSON.stringify({ expired: true })}\n\n`)
-                            );
-                            cleanup();
-                            controller.close();
                         }
                     } catch (err) {
                         // Silently handle polling errors
                     }
-                }, 5000); // Check every 5 seconds
+                }, 30000); // Check every 30 seconds (less frequent since it's just a fallback)
 
                 // Keep connection alive with heartbeat
                 heartbeat = setInterval(() => {

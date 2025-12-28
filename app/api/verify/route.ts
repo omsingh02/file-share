@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
             .update({
                 access_count: (access as any).access_count + 1,
                 last_accessed: new Date().toISOString(),
-            } as any)
+            } as never)
             .eq('id', (access as any).id);
 
         // Get signed URL for file

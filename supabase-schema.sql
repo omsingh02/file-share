@@ -37,6 +37,9 @@ CREATE INDEX IF NOT EXISTS idx_files_uploaded_by ON files(uploaded_by);
 CREATE INDEX IF NOT EXISTS idx_file_access_file_id ON file_access(file_id);
 CREATE INDEX IF NOT EXISTS idx_file_access_user_identifier ON file_access(user_identifier);
 
+-- Enable Realtime for file_access table (for instant revocation notifications)
+ALTER PUBLICATION supabase_realtime ADD TABLE file_access;
+
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

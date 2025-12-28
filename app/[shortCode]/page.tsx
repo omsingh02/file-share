@@ -15,20 +15,85 @@ export default function ShortCodePage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [fileData, setFileData] = useState<any>(null);
+    const [isRevalidating, setIsRevalidating] = useState(true);
+    const [cachedUserIdentifier, setCachedUserIdentifier] = useState('');
+
+    // Real-time access monitoring via SSE
+    useEffect(() => {
+        if (!isVerified || !cachedUserIdentifier) return;
+
+        const eventSource = new EventSource(
+            `/api/access/stream?shortCode=${encodeURIComponent(shortCode)}&userIdentifier=${encodeURIComponent(cachedUserIdentifier)}`
+        );
+
+        eventSource.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.revoked || data.expired) {
+                    // Access revoked or expired - kick user out
+                    const sessionKey = `file_access_${shortCode}`;
+                    sessionStorage.removeItem(sessionKey);
+                    setIsVerified(false);
+                    setFileData(null);
+                    setError(data.revoked ? 'Access has been revoked' : 'Access has expired');
+                    eventSource.close();
+                }
+            } catch (e) {
+                // Ignore heartbeat messages
+            }
+        };
+
+        eventSource.onerror = () => {
+            eventSource.close();
+        };
+
+        return () => {
+            eventSource.close();
+        };
+    }, [isVerified, cachedUserIdentifier, shortCode]);
 
     useEffect(() => {
-        const sessionKey = `file_access_${shortCode}`;
-        const sessionData = sessionStorage.getItem(sessionKey);
+        const revalidateAccess = async () => {
+            const sessionKey = `file_access_${shortCode}`;
+            const sessionData = sessionStorage.getItem(sessionKey);
 
-        if (sessionData) {
-            try {
-                const data = JSON.parse(sessionData);
-                setFileData(data);
-                setIsVerified(true);
-            } catch (e) {
-                sessionStorage.removeItem(sessionKey);
+            if (sessionData) {
+                try {
+                    const data = JSON.parse(sessionData);
+                    
+                    // Re-verify access is still valid
+                    const response = await fetch('/api/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            shortCode,
+                            userIdentifier: data.userIdentifier,
+                            password: data.password,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const freshData = await response.json();
+                        sessionStorage.setItem(sessionKey, JSON.stringify({
+                            ...freshData,
+                            userIdentifier: data.userIdentifier,
+                            password: data.password,
+                        }));
+                        setFileData(freshData);
+                        setIsVerified(true);
+                        setCachedUserIdentifier(data.userIdentifier);
+                    } else {
+                        // Access revoked or expired
+                        sessionStorage.removeItem(sessionKey);
+                    }
+                } catch (e) {
+                    sessionStorage.removeItem(sessionKey);
+                }
             }
-        }
+            setIsRevalidating(false);
+        };
+
+        revalidateAccess();
     }, [shortCode]);
 
     const handleVerify = async (e: React.FormEvent) => {
@@ -54,16 +119,35 @@ export default function ShortCodePage() {
             }
 
             const sessionKey = `file_access_${shortCode}`;
-            sessionStorage.setItem(sessionKey, JSON.stringify(data));
+            sessionStorage.setItem(sessionKey, JSON.stringify({
+                ...data,
+                userIdentifier,
+                password,
+            }));
 
             setFileData(data);
             setIsVerified(true);
+            setCachedUserIdentifier(userIdentifier);
         } catch (err: any) {
             setError(err.message || 'Failed to verify access');
         } finally {
             setIsVerifying(false);
         }
     };
+
+    if (isRevalidating) {
+        return (
+            <div style={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#1a1a1a',
+            }}>
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
     if (isVerified && fileData) {
         return <FilePreview fileData={fileData} />;

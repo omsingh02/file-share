@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { Card, LoadingSpinner } from '@/components/ui';
 import FileUploader from '@/components/admin/FileUploader';
 import FileList from '@/components/admin/FileList';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 
 export default function DashboardPage() {
+    const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
     const [stats, setStats] = useState({
         totalFiles: 0,
         totalSize: 0,
@@ -38,23 +40,58 @@ export default function DashboardPage() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* Header */}
+            {/* Header with Tabs */}
             <div>
                 <h1 style={{
                     fontSize: '1.5rem',
                     fontWeight: 600,
                     color: '#e0e0e0',
                     margin: 0,
+                    marginBottom: '1rem',
                 }}>Dashboard</h1>
-                <p style={{
-                    fontSize: '0.875rem',
-                    color: '#9ca3af',
-                    marginTop: '0.25rem',
+                
+                <div style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    borderBottom: '1px solid #3a3a3a',
                 }}>
-                    Manage your files and access control
-                </p>
+                    <button
+                        onClick={() => setActiveTab('overview')}
+                        style={{
+                            padding: '0.75rem 1.5rem',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            color: activeTab === 'overview' ? '#3b82f6' : '#9ca3af',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            borderBottom: activeTab === 'overview' ? '2px solid #3b82f6' : '2px solid transparent',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        Overview
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('analytics')}
+                        style={{
+                            padding: '0.75rem 1.5rem',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            color: activeTab === 'analytics' ? '#3b82f6' : '#9ca3af',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            borderBottom: activeTab === 'analytics' ? '2px solid #3b82f6' : '2px solid transparent',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        Analytics
+                    </button>
+                </div>
             </div>
 
+            {activeTab === 'overview' ? (
+                <>
             {/* Stats Grid */}
             <div style={{
                 display: 'grid',
@@ -210,6 +247,10 @@ export default function DashboardPage() {
                 }}>Your Files</h2>
                 <FileList key={refreshKey} />
             </div>
+                </>
+            ) : (
+                <AnalyticsDashboard />
+            )}
         </div>
     );
 }

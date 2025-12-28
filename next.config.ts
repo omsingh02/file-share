@@ -37,10 +37,11 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // Next.js requires unsafe-inline/eval in dev
-              "style-src 'self' 'unsafe-inline'", // Tailwind requires unsafe-inline
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Allow Google Fonts
               "img-src 'self' data: blob: https:", // Allow images from data URLs, blob, and HTTPS
-              "font-src 'self' data:",
+              "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co", // Supabase API/Realtime
+              "frame-src 'self' https://*.supabase.co https://view.officeapps.live.com", // Allow Supabase frames and Office viewer
               "frame-ancestors 'none'", // Equivalent to X-Frame-Options: DENY
             ].join('; '),
           },

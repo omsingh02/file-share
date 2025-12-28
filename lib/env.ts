@@ -21,13 +21,13 @@ function getEnvVar(key: string, required: boolean = true): string {
     return value || '';
 }
 
-// Validate and export environment variables
+// Client-side environment variables (NEXT_PUBLIC_*)
+// These are safe to access anywhere
 export const env = {
-    // Supabase
+    // Supabase public config
     supabase: {
         url: getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
         anonKey: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
-        serviceRoleKey: getEnvVar('SUPABASE_SERVICE_ROLE_KEY'),
     },
     
     // Application
@@ -36,5 +36,16 @@ export const env = {
     },
 } as const;
 
+// Server-side only environment variables
+// These should only be accessed in server components, API routes, or server actions
+export const serverEnv = {
+    supabase: {
+        serviceRoleKey: typeof window === 'undefined' 
+            ? getEnvVar('SUPABASE_SERVICE_ROLE_KEY')
+            : '',
+    },
+} as const;
+
 // Type-safe environment variables
 export type Env = typeof env;
+export type ServerEnv = typeof serverEnv;

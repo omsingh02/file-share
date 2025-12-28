@@ -1,48 +1,51 @@
 /**
  * Environment variable validation and configuration
- * Validates required environment variables at build/runtime
+ * Validates at build time to ensure all required variables are present
  */
 
-function getEnvVar(key: string, required: boolean = true): string {
-    const value = process.env[key];
+// Validate server-side environment variables at build time
+function validateServerEnv() {
+    if (typeof window !== 'undefined') return; // Skip in browser
     
-    if (!value && required) {
-        // Only throw during build time (server-side), not in browser
-        if (typeof window === 'undefined') {
-            throw new Error(
-                `Missing required environment variable: ${key}\n` +
-                `Please add it to your Vercel environment variables or .env.local file.`
-            );
-        } else {
-            console.error(`Missing required environment variable: ${key}`);
-        }
+    const required = {
+        'NEXT_PUBLIC_SUPABASE_URL': process.env.NEXT_PUBLIC_SUPABASE_URL,
+        'NEXT_PUBLIC_SUPABASE_ANON_KEY': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        'NEXT_PUBLIC_APP_URL': process.env.NEXT_PUBLIC_APP_URL,
+        'SUPABASE_SERVICE_ROLE_KEY': process.env.SUPABASE_SERVICE_ROLE_KEY,
+    };
+    
+    const missing = Object.entries(required)
+        .filter(([, value]) => !value)
+        .map(([key]) => key);
+    
+    if (missing.length > 0) {
+        throw new Error(
+            `Missing required environment variables:\n${missing.join('\n')}\n\n` +
+            `Add these to your .env.local file or Vercel environment variables.`
+        );
     }
-    
-    return value || '';
 }
 
+// Run validation on server-side during module initialization
+validateServerEnv();
+
 // Client-side environment variables (NEXT_PUBLIC_*)
-// These are safe to access anywhere
+// These are replaced at build time by Next.js and become string literals
 export const env = {
-    // Supabase public config
     supabase: {
-        url: getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
-        anonKey: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     },
-    
-    // Application
     app: {
-        url: getEnvVar('NEXT_PUBLIC_APP_URL'),
+        url: process.env.NEXT_PUBLIC_APP_URL!,
     },
 } as const;
 
 // Server-side only environment variables
-// These should only be accessed in server components, API routes, or server actions
+// Only access these in server components, API routes, or middleware
 export const serverEnv = {
     supabase: {
-        serviceRoleKey: typeof window === 'undefined' 
-            ? getEnvVar('SUPABASE_SERVICE_ROLE_KEY')
-            : '',
+        serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
     },
 } as const;
 

@@ -7,10 +7,15 @@ function getEnvVar(key: string, required: boolean = true): string {
     const value = process.env[key];
     
     if (!value && required) {
-        throw new Error(
-            `Missing required environment variable: ${key}\n` +
-            `Please add it to your .env.local file.`
-        );
+        // Only throw during build time (server-side), not in browser
+        if (typeof window === 'undefined') {
+            throw new Error(
+                `Missing required environment variable: ${key}\n` +
+                `Please add it to your Vercel environment variables or .env.local file.`
+            );
+        } else {
+            console.error(`Missing required environment variable: ${key}`);
+        }
     }
     
     return value || '';

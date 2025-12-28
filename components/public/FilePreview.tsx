@@ -90,6 +90,9 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                     preload="metadata"
                     style={{
                         width: '100%',
+                        height: '100%',
+                        maxHeight: '75vh',
+                        objectFit: 'contain',
                         backgroundColor: '#000',
                     }}
                 >

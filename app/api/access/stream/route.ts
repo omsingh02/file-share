@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { sanitizeShortCode, sanitizeUserIdentifier } from '@/lib/utils/sanitization';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -8,6 +9,14 @@ export async function GET(request: NextRequest) {
 
     if (!shortCode || !userIdentifier) {
         return new Response('Missing parameters', { status: 400 });
+    }
+
+    // Sanitize inputs
+    const sanitizedShortCode = sanitizeShortCode(shortCode);
+    const sanitizedUserIdentifier = sanitizeUserIdentifier(userIdentifier);
+
+    if (!sanitizedShortCode || !sanitizedUserIdentifier) {
+        return new Response('Invalid parameters', { status: 400 });
     }
 
     const encoder = new TextEncoder();
@@ -23,7 +32,7 @@ export async function GET(request: NextRequest) {
                 const { data: file } = await adminClient
                     .from('files')
                     .select('id')
-                    .eq('short_code', shortCode)
+                    .eq('short_code', sanitizedShortCode)
                     .single();
 
                 if (!file) {
@@ -36,7 +45,7 @@ export async function GET(request: NextRequest) {
                     .from('file_access')
                     .select('id')
                     .eq('file_id', (file as any).id)
-                    .eq('user_identifier', userIdentifier)
+                    .eq('user_identifier', sanitizedUserIdentifier)
                     .single();
 
                 if (!accessRecord) {
@@ -63,11 +72,9 @@ export async function GET(request: NextRequest) {
                             filter: `id=eq.${(accessRecord as any).id}`,
                         },
                         async (payload) => {
-                            console.log('SSE Realtime event:', payload.eventType);
                             // Check if this user's access was affected
                             if (payload.eventType === 'DELETE') {
                                 // Access was deleted - revoke immediately
-                                console.log('Access deleted - sending revocation');
                                 controller.enqueue(
                                     encoder.encode(`data: ${JSON.stringify({ revoked: true })}\n\n`)
                                 );
@@ -77,7 +84,6 @@ export async function GET(request: NextRequest) {
                                 const updated = payload.new as any;
                                 // Check if expired
                                 if (updated.expires_at && new Date(updated.expires_at) < new Date()) {
-                                    console.log('Access expired - sending expiration');
                                     controller.enqueue(
                                         encoder.encode(`data: ${JSON.stringify({ expired: true })}\n\n`)
                                     );
@@ -86,12 +92,8 @@ export async function GET(request: NextRequest) {
                                 }
                             }
                         }
-                    )
-                    .subscribe((status: string) => {
-                        console.log('Realtime subscription status:', status);
-                    });
-
-                // Periodically check access status (fallback in case realtime fails)
+                )
+                .subscribe();                // Periodically check access status (fallback in case realtime fails)
                 checkInterval = setInterval(async () => {
                     try {
                         const { data: currentAccess, error } = await adminClient
@@ -102,7 +104,6 @@ export async function GET(request: NextRequest) {
 
                         if (error || !currentAccess) {
                             // Access was deleted
-                            console.log('Polling detected access deleted');
                             controller.enqueue(
                                 encoder.encode(`data: ${JSON.stringify({ revoked: true })}\n\n`)
                             );
@@ -110,7 +111,6 @@ export async function GET(request: NextRequest) {
                             controller.close();
                         } else if ((currentAccess as any).expires_at && new Date((currentAccess as any).expires_at) < new Date()) {
                             // Access expired
-                            console.log('Polling detected access expired');
                             controller.enqueue(
                                 encoder.encode(`data: ${JSON.stringify({ expired: true })}\n\n`)
                             );
@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
                             controller.close();
                         }
                     } catch (err) {
-                        console.error('Polling check error:', err);
+                        // Silently handle polling errors
                     }
                 }, 5000); // Check every 5 seconds
 
@@ -133,7 +133,6 @@ export async function GET(request: NextRequest) {
                     controller.close();
                 });
             } catch (error) {
-                console.error('SSE stream error:', error);
                 controller.close();
             }
         },

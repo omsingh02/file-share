@@ -53,7 +53,8 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = file.originalFilename;
+            // Use textContent to safely set filename without XSS risk
+            a.download = file.originalFilename.replace(/[^a-zA-Z0-9._-]/g, '_');
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -71,7 +72,7 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
             return (
                 <img
                     src={fileUrl}
-                    alt={file.originalFilename}
+                    alt="User uploaded image"
                     style={{
                         maxWidth: '100%',
                         height: 'auto',

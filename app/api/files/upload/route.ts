@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { generateShortCode } from '@/lib/utils/shortCode';
 import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
 import { validateFile } from '@/lib/utils/fileTypes';
+import { sanitizeFilename } from '@/lib/utils/sanitization';
 import { env } from '@/lib/env';
 
 // Helper function to detect MIME type from file extension
@@ -109,6 +110,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Sanitize the original filename to prevent XSS
+        const sanitizedOriginalFilename = sanitizeFilename(file.name);
+
         // Generate unique filename and short code
         const fileExt = file.name.split('.').pop();
         const timestamp = Date.now();
@@ -116,7 +120,7 @@ export async function POST(request: NextRequest) {
         const shortCode = generateShortCode();
         
         // Get correct MIME type (prefer extension-based detection over browser-provided)
-        const contentType = getMimeTypeFromExtension(file.name, file.type);
+        const contentType = getMimeTypeFromExtension(sanitizedOriginalFilename, file.type);
 
         // Upload to Supabase Storage
         const adminClient = createAdminClient();
@@ -136,7 +140,7 @@ export async function POST(request: NextRequest) {
             .from('files')
             .insert({
                 filename: uniqueFilename,
-                original_filename: file.name,
+                original_filename: sanitizedOriginalFilename,
                 file_path: uploadData.path,
                 file_size: file.size,
                 mime_type: contentType,

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { hashPassword } from '@/lib/utils/crypto';
 import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
+import { sanitizeUserIdentifier } from '@/lib/utils/sanitization';
 
 export async function GET(request: NextRequest) {
     try {
@@ -89,6 +90,12 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
+        // Sanitize user identifier to prevent XSS
+        const sanitizedUserIdentifier = sanitizeUserIdentifier(userIdentifier);
+        if (!sanitizedUserIdentifier) {
+            return NextResponse.json({ error: 'Invalid user identifier' }, { status: 400 });
+        }
+
         // Verify file ownership
         const adminClient = createAdminClient();
         const { data: file, error: fileError } = await adminClient
@@ -110,7 +117,7 @@ export async function POST(request: NextRequest) {
             .from('file_access')
             .insert({
                 file_id: fileId,
-                user_identifier: userIdentifier,
+                user_identifier: sanitizedUserIdentifier,
                 password_hash: passwordHash,
                 expires_at: expiresAt || null,
             } as any)

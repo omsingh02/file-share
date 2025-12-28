@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyPassword } from '@/lib/utils/crypto';
 import { generateAccessToken, hashToken } from '@/lib/utils/tokens';
 import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
+import { sanitizeUserIdentifier, sanitizeShortCode } from '@/lib/utils/sanitization';
 
 export async function POST(request: NextRequest) {
     try {
@@ -25,13 +26,21 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
+        // Sanitize inputs to prevent injection attacks
+        const sanitizedShortCode = sanitizeShortCode(shortCode);
+        const sanitizedUserIdentifier = sanitizeUserIdentifier(userIdentifier);
+
+        if (!sanitizedShortCode || !sanitizedUserIdentifier) {
+            return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+        }
+
         const adminClient = createAdminClient();
 
         // Get file by short code
         const { data: file, error: fileError } = await adminClient
             .from('files')
             .select('*')
-            .eq('short_code', shortCode)
+            .eq('short_code', sanitizedShortCode)
             .single();
 
         if (fileError || !file) {
@@ -43,7 +52,7 @@ export async function POST(request: NextRequest) {
             .from('file_access')
             .select('*')
             .eq('file_id', (file as any).id)
-            .eq('user_identifier', userIdentifier)
+            .eq('user_identifier', sanitizedUserIdentifier)
             .single();
 
         if (accessError || !access) {

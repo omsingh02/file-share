@@ -22,21 +22,14 @@ export default function ShortCodePage() {
     useEffect(() => {
         if (!isVerified || !cachedUserIdentifier) return;
 
-        console.log('Setting up SSE connection for access monitoring...');
         const eventSource = new EventSource(
             `/api/access/stream?shortCode=${encodeURIComponent(shortCode)}&userIdentifier=${encodeURIComponent(cachedUserIdentifier)}`
         );
 
-        eventSource.onopen = () => {
-            console.log('SSE connection opened');
-        };
-
         eventSource.onmessage = (event) => {
-            console.log('SSE message received:', event.data);
             try {
                 const data = JSON.parse(event.data);
                 if (data.revoked || data.expired) {
-                    console.log('Access revoked/expired, locking out user');
                     // Access revoked or expired - kick user out
                     const sessionKey = `file_access_${shortCode}`;
                     sessionStorage.removeItem(sessionKey);
@@ -47,17 +40,14 @@ export default function ShortCodePage() {
                 }
             } catch (e) {
                 // Ignore heartbeat messages and non-JSON data
-                console.log('SSE heartbeat or non-JSON message');
             }
         };
 
-        eventSource.onerror = (error) => {
-            console.error('SSE error:', error);
+        eventSource.onerror = () => {
             eventSource.close();
         };
 
         return () => {
-            console.log('Cleaning up SSE connection');
             eventSource.close();
         };
     }, [isVerified, cachedUserIdentifier, shortCode]);

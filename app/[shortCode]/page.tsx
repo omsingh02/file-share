@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Card, Input, Button, LoadingSpinner } from '@/components/ui';
+import { LoadingSpinner } from '@/components/ui';
 import FilePreview from '@/components/public/FilePreview';
 
 export default function ShortCodePage() {
@@ -70,60 +70,162 @@ export default function ShortCodePage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--background)]">
-            <Card className="w-full max-w-md p-8">
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-[var(--primary)] rounded mx-auto mb-4 flex items-center justify-center">
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+            backgroundColor: '#1a1a1a',
+        }}>
+            <div style={{
+                width: '100%',
+                maxWidth: '448px',
+                padding: '2rem',
+                backgroundColor: '#2a2a2a',
+                borderRadius: '8px',
+                border: '1px solid #3a3a3a',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+            }}>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <div style={{
+                        width: '64px',
+                        height: '64px',
+                        backgroundColor: '#3b82f6',
+                        borderRadius: '6px',
+                        margin: '0 auto 1rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <svg style={{ width: '32px', height: '32px', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h1 className="text-2xl font-semibold text-[var(--text)] mb-1">Secure File Access</h1>
-                    <p className="text-sm text-[var(--text-secondary)]">Enter your credentials to access this file</p>
+                    <h1 style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 600,
+                        color: '#e0e0e0',
+                        marginBottom: '0.25rem',
+                        margin: '0 0 0.25rem 0',
+                    }}>Secure File Access</h1>
+                    <p style={{
+                        fontSize: '0.875rem',
+                        color: '#9ca3af',
+                        margin: 0,
+                    }}>Enter your credentials to access this file</p>
                 </div>
 
-                <form onSubmit={handleVerify} className="space-y-4">
-                    <Input
-                        label="Email or Username"
-                        value={userIdentifier}
-                        onChange={(e) => setUserIdentifier(e.target.value)}
-                        placeholder="your@email.com"
-                        required
-                        autoComplete="username"
-                    />
+                <form onSubmit={handleVerify} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                }}>
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>Email or Username</label>
+                        <input
+                            value={userIdentifier}
+                            onChange={(e) => setUserIdentifier(e.target.value)}
+                            placeholder="your@email.com"
+                            required
+                            autoComplete="username"
+                            style={{
+                                width: '100%',
+                                padding: '0.625rem 0.875rem',
+                                borderRadius: '4px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#3a3a3a'}
+                        />
+                    </div>
 
-                    <Input
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                        autoComplete="current-password"
-                    />
+                    <div>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '0.5rem',
+                        }}>Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                            required
+                            autoComplete="current-password"
+                            style={{
+                                width: '100%',
+                                padding: '0.625rem 0.875rem',
+                                borderRadius: '4px',
+                                border: '1px solid #3a3a3a',
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#3a3a3a'}
+                        />
+                    </div>
 
                     {error && (
-                        <div className="p-3 rounded bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900">
-                            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+                        <div style={{
+                            padding: '0.75rem',
+                            borderRadius: '4px',
+                            backgroundColor: '#7f1d1d',
+                            border: '1px solid #ef4444',
+                        }}>
+                            <p style={{ fontSize: '0.875rem', color: '#fecaca', margin: 0 }}>{error}</p>
                         </div>
                     )}
 
-                    <Button
+                    <button
                         type="submit"
-                        variant="primary"
-                        className="w-full"
-                        isLoading={isVerifying}
+                        disabled={isVerifying}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            color: 'white',
+                            backgroundColor: '#3b82f6',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: isVerifying ? 'not-allowed' : 'pointer',
+                            opacity: isVerifying ? 0.6 : 1,
+                            transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isVerifying) e.currentTarget.style.backgroundColor = '#2563eb';
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isVerifying) e.currentTarget.style.backgroundColor = '#3b82f6';
+                        }}
                     >
-                        Access File
-                    </Button>
+                        {isVerifying ? 'Verifying...' : 'Access File'}
+                    </button>
                 </form>
 
-                <div className="mt-6 text-center">
-                    <p className="text-xs text-[var(--text-muted)]">
+                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                    <p style={{
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                        margin: 0,
+                    }}>
                         This file is protected. Contact the file owner if you need access.
                     </p>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 }

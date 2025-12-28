@@ -110,13 +110,7 @@ export async function GET(request: NextRequest) {
                             cleanup();
                             controller.close();
                         } else if ((currentAccess as any).expires_at && new Date((currentAccess as any).expires_at) < new Date()) {
-                            // Access expired - delete it to trigger realtime DELETE event
-                            await adminClient
-                                .from('file_access')
-                                .delete()
-                                .eq('id', (accessRecord as any).id);
-                            
-                            // Send expired notification
+                            // Access expired
                             controller.enqueue(
                                 encoder.encode(`data: ${JSON.stringify({ expired: true })}\n\n`)
                             );

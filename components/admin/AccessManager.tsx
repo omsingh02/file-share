@@ -44,6 +44,9 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
         setIsLoading(true);
 
         try {
+            // Convert datetime-local to ISO string with timezone
+            const expiresAtISO = expiresAt ? new Date(expiresAt).toISOString() : null;
+
             const response = await fetch('/api/access', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -51,7 +54,7 @@ export default function AccessManager({ file, isOpen, onClose }: AccessManagerPr
                     fileId: file.id,
                     userIdentifier,
                     password,
-                    expiresAt: expiresAt || null,
+                    expiresAt: expiresAtISO,
                     maxDownloads: maxDownloads ? parseInt(maxDownloads) : null,
                 }),
             });

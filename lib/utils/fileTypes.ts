@@ -39,9 +39,18 @@ const MIME_TYPE_CATEGORIES: Record<string, FileCategory> = {
     'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'document',
     'text/plain': 'document',
     'text/csv': 'document',
+    'text/markdown': 'document',
+    'text/x-markdown': 'document',
+    'application/json': 'document',
+    'application/javascript': 'document',
+    'text/javascript': 'document',
+    'text/html': 'document',
+    'text/css': 'document',
+    'application/xml': 'document',
+    'text/xml': 'document',
 };
 
-const PREVIEWABLE_TYPES: Set<FileCategory> = new Set(['image', 'video', 'audio', 'pdf']);
+const PREVIEWABLE_TYPES: Set<FileCategory> = new Set(['image', 'video', 'audio', 'pdf', 'document']);
 
 /**
  * Gets file type information from MIME type

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getFileTypeInfo, formatFileSize } from '@/lib/utils/fileTypes';
 
 interface FilePreviewProps {
@@ -18,6 +18,25 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
     const { fileUrl, file } = fileData;
     const typeInfo = getFileTypeInfo(file.mimeType);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [textContent, setTextContent] = useState<string>('');
+    const [isLoadingText, setIsLoadingText] = useState(false);
+
+    // Load text content for text-based files
+    useEffect(() => {
+        const isTextFile = file.mimeType.startsWith('text/') || 
+                          file.mimeType === 'application/json' ||
+                          file.mimeType === 'application/javascript' ||
+                          file.mimeType === 'application/xml';
+        
+        if (isTextFile && typeInfo.category === 'document') {
+            setIsLoadingText(true);
+            fetch(fileUrl)
+                .then(res => res.text())
+                .then(text => setTextContent(text))
+                .catch(() => setTextContent('Failed to load file content'))
+                .finally(() => setIsLoadingText(false));
+        }
+    }, [fileUrl, file.mimeType, typeInfo.category]);
 
     const handleDownload = async () => {
         setIsDownloading(true);
@@ -128,6 +147,81 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                 );
 
             case 'document':
+                // Check if it's a text-based file
+                const isTextFile = file.mimeType.startsWith('text/') || 
+                                  file.mimeType === 'application/json' ||
+                                  file.mimeType === 'application/javascript' ||
+                                  file.mimeType === 'application/xml';
+                
+                if (isTextFile && textContent) {
+                    return (
+                        <div style={{ padding: '1.5rem' }}>
+                            <pre style={{
+                                backgroundColor: '#1a1a1a',
+                                color: '#e0e0e0',
+                                padding: '1.5rem',
+                                borderRadius: '6px',
+                                overflow: 'auto',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.6',
+                                fontFamily: 'Monaco, Menlo, "Courier New", monospace',
+                                margin: 0,
+                                maxHeight: '70vh',
+                            }}>
+                                <code>{textContent}</code>
+                            </pre>
+                        </div>
+                    );
+                }
+                
+                if (isLoadingText) {
+                    return (
+                        <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                            <p style={{ color: '#9ca3af' }}>Loading preview...</p>
+                        </div>
+                    );
+                }
+                
+                // Fallback for non-previewable documents
+                return (
+                    <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                        <div style={{
+                            width: '64px',
+                            height: '64px',
+                            backgroundColor: '#1a1a1a',
+                            borderRadius: '6px',
+                            margin: '0 auto 1rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <div style={{ fontSize: '2rem', opacity: 0.7 }}>{typeInfo.icon}</div>
+                        </div>
+                        <h3 style={{
+                            fontSize: '1.125rem',
+                            fontWeight: 500,
+                            color: '#e0e0e0',
+                            marginBottom: '0.5rem',
+                        }}>
+                            {file.originalFilename}
+                        </h3>
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '1.5rem',
+                        }}>
+                            {formatFileSize(file.fileSize)} • {typeInfo.category}
+                        </p>
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#6b7280',
+                            marginBottom: '1.5rem',
+                        }}>
+                            Preview not available for this file type
+                        </p>
+                    </div>
+                );
+
             case 'other':
             default:
                 return (

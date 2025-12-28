@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { generateShortCode } from '@/lib/utils/shortCode';
 import { rateLimit, getClientIdentifier } from '@/lib/utils/ratelimit';
 import { validateFile } from '@/lib/utils/fileTypes';
+import { env } from '@/lib/env';
 
 // Helper function to detect MIME type from file extension
 function getMimeTypeFromExtension(filename: string, browserMimeType: string): string {
@@ -158,7 +159,7 @@ export async function POST(request: NextRequest) {
                 filename: (fileData as any).filename,
                 originalFilename: (fileData as any).original_filename,
                 shortCode: (fileData as any).short_code,
-                shortUrl: `${process.env.NEXT_PUBLIC_APP_URL}/${(fileData as any).short_code}`,
+                shortUrl: `${env.app.url}/${(fileData as any).short_code}`,
             },
         });
     } catch (error) {

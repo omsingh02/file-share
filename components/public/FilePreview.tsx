@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import { getFileTypeInfo, formatFileSize } from '@/lib/utils/fileTypes';
 
 interface FilePreviewProps {
@@ -27,6 +26,12 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                       file.mimeType === 'application/json' ||
                       file.mimeType === 'application/javascript' ||
                       file.mimeType === 'application/xml';
+
+    // Check if it's a Microsoft Office file
+    const isMicrosoftDoc = file.mimeType.includes('officedocument') ||
+                          file.mimeType.includes('msword') ||
+                          file.mimeType.includes('ms-excel') ||
+                          file.mimeType.includes('ms-powerpoint');
 
     // Load text content for text-based files
     useEffect(() => {
@@ -161,30 +166,33 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
             );
         }
 
-        // Documents (PDF, DOCX, XLSX, PPTX) - use DocViewer
-        if (typeInfo.category === 'pdf' || typeInfo.category === 'document') {
-            const docs = [
-                {
-                    uri: fileUrl,
-                    fileName: file.originalFilename,
-                }
-            ];
-
+        // Microsoft Office files - use Office Online Viewer
+        if (isMicrosoftDoc) {
+            const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
             return (
-                <DocViewer
-                    documents={docs}
-                    pluginRenderers={DocViewerRenderers}
-                    config={{
-                        header: {
-                            disableHeader: true,
-                        },
-                    }}
+                <iframe
+                    src={officeViewerUrl}
                     style={{
-                        minHeight: '70vh',
-                        height: '70vh',
                         width: '100%',
-                        backgroundColor: '#2a2a2a',
+                        height: '100%',
+                        border: 'none',
                     }}
+                    title={file.originalFilename}
+                />
+            );
+        }
+
+        // PDF - use browser's built-in viewer
+        if (typeInfo.category === 'pdf') {
+            return (
+                <iframe
+                    src={fileUrl}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        border: 'none',
+                    }}
+                    title={file.originalFilename}
                 />
             );
         }
@@ -296,7 +304,7 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                     borderRadius: '8px',
                     border: '1px solid #3a3a3a',
                     overflow: 'hidden',
-                    minHeight: '70vh',
+                    height: '75vh',
                 }}>
                     {renderPreview()}
                 </div>

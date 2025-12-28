@@ -28,8 +28,10 @@ export interface Database {
                     access_count: number;
                     last_accessed: string | null;
                     created_at: string;
+                    session_token: string | null;
+                    session_expires_at: string | null;
                 };
-                Insert: Omit<Database['public']['Tables']['file_access']['Row'], 'id' | 'access_count' | 'last_accessed' | 'created_at'>;
+                Insert: Omit<Database['public']['Tables']['file_access']['Row'], 'id' | 'access_count' | 'last_accessed' | 'created_at' | 'session_token' | 'session_expires_at'>;
                 Update: Partial<Database['public']['Tables']['file_access']['Insert']>;
             };
         };

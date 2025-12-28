@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyPassword } from '@/lib/utils/crypto';
+import { generateAccessToken, hashToken } from '@/lib/utils/tokens';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { shortCode, userIdentifier, password } = body;
+        const { shortCode, userIdentifier, password, sessionToken } = body;
 
-        if (!shortCode || !userIdentifier || !password) {
+        // Allow either password auth or session token auth
+        if (!shortCode || !userIdentifier || (!password && !sessionToken)) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
@@ -41,10 +43,40 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Access expired' }, { status: 403 });
         }
 
-        // Verify password
-        const isValid = await verifyPassword(password, (access as any).password_hash);
-        if (!isValid) {
-            return NextResponse.json({ error: 'Invalid password' }, { status: 403 });
+        let newSessionToken: string | null = null;
+
+        // Verify either password or session token
+        if (sessionToken) {
+            // Session token authentication
+            const tokenHash = await hashToken(sessionToken);
+            if ((access as any).session_token !== tokenHash) {
+                return NextResponse.json({ error: 'Invalid session' }, { status: 403 });
+            }
+
+            // Check if session expired
+            if ((access as any).session_expires_at && new Date((access as any).session_expires_at) < new Date()) {
+                return NextResponse.json({ error: 'Session expired' }, { status: 403 });
+            }
+        } else if (password) {
+            // Password authentication - create new session
+            const isValid = await verifyPassword(password, (access as any).password_hash);
+            if (!isValid) {
+                return NextResponse.json({ error: 'Invalid password' }, { status: 403 });
+            }
+
+            // Generate new session token (24 hour expiry)
+            newSessionToken = generateAccessToken();
+            const tokenHash = await hashToken(newSessionToken);
+            const sessionExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+            // Store hashed token in database
+            await adminClient
+                .from('file_access')
+                .update({
+                    session_token: tokenHash,
+                    session_expires_at: sessionExpiresAt,
+                } as never)
+                .eq('id', (access as any).id);
         }
 
         // Update access count
@@ -67,6 +99,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
+            sessionToken: newSessionToken, // Only returned on password auth
             fileUrl: signedUrlData.signedUrl,
             file: {
                 id: (file as any).id,

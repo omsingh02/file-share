@@ -61,29 +61,30 @@ export default function ShortCodePage() {
                 try {
                     const data = JSON.parse(sessionData);
                     
-                    // Re-verify access is still valid
+                    // Re-verify access using session token (no password needed)
                     const response = await fetch('/api/verify', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             shortCode,
                             userIdentifier: data.userIdentifier,
-                            password: data.password,
+                            sessionToken: data.sessionToken,
                         }),
                     });
 
                     if (response.ok) {
                         const freshData = await response.json();
+                        // Update session storage with fresh data (keep existing token)
                         sessionStorage.setItem(sessionKey, JSON.stringify({
                             ...freshData,
                             userIdentifier: data.userIdentifier,
-                            password: data.password,
+                            sessionToken: data.sessionToken,
                         }));
                         setFileData(freshData);
                         setIsVerified(true);
                         setCachedUserIdentifier(data.userIdentifier);
                     } else {
-                        // Access revoked or expired
+                        // Access revoked, expired, or invalid session
                         const errorData = await response.json().catch(() => ({}));
                         sessionStorage.removeItem(sessionKey);
                         setError(errorData.error || 'Access denied');
@@ -122,10 +123,12 @@ export default function ShortCodePage() {
             }
 
             const sessionKey = `file_access_${shortCode}`;
+            // Store session token instead of password
             sessionStorage.setItem(sessionKey, JSON.stringify({
-                ...data,
                 userIdentifier,
-                password,
+                sessionToken: data.sessionToken,
+                fileUrl: data.fileUrl,
+                file: data.file,
             }));
 
             setFileData(data);

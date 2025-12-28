@@ -10,6 +10,10 @@ export default async function AdminLayout({
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Fallback for user email (defensive programming)
+    const userEmail = user?.email || 'User';
+    const userInitial = userEmail.charAt(0).toUpperCase();
+
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a' }}>
             {/* Professional Header */}
@@ -87,7 +91,7 @@ export default async function AdminLayout({
                                         fontWeight: 600,
                                         color: '#3b82f6',
                                     }}>
-                                        {user.email?.charAt(0).toUpperCase()}
+                                        {userInitial}
                                     </span>
                                 </div>
                                 <span style={{
@@ -95,7 +99,7 @@ export default async function AdminLayout({
                                     color: 'rgba(255, 255, 255, 0.7)',
                                     fontWeight: 500,
                                 }}>
-                                    {user.email}
+                                    {userEmail}
                                 </span>
                             </div>
                             <form action="/api/auth/signout" method="POST">

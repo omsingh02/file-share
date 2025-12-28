@@ -3,6 +3,64 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateShortCode } from '@/lib/utils/shortCode';
 
+// Helper function to detect MIME type from file extension
+function getMimeTypeFromExtension(filename: string, browserMimeType: string): string {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    
+    const mimeTypeMap: Record<string, string> = {
+        // Markdown
+        'md': 'text/markdown',
+        'markdown': 'text/markdown',
+        
+        // Text files
+        'txt': 'text/plain',
+        'csv': 'text/csv',
+        
+        // Code files
+        'json': 'application/json',
+        'xml': 'application/xml',
+        'js': 'text/javascript',
+        'ts': 'text/typescript',
+        'jsx': 'text/javascript',
+        'tsx': 'text/typescript',
+        'css': 'text/css',
+        'html': 'text/html',
+        'htm': 'text/html',
+        
+        // Documents
+        'pdf': 'application/pdf',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'xls': 'application/vnd.ms-excel',
+        'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'ppt': 'application/vnd.ms-powerpoint',
+        'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        
+        // Images
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'webp': 'image/webp',
+        'svg': 'image/svg+xml',
+        
+        // Video
+        'mp4': 'video/mp4',
+        'webm': 'video/webm',
+        'ogv': 'video/ogg',
+        
+        // Audio
+        'mp3': 'audio/mpeg',
+        'wav': 'audio/wav',
+        'ogg': 'audio/ogg',
+        'oga': 'audio/ogg',
+    };
+    
+    // If we have a mapped MIME type for this extension, use it
+    // Otherwise, fall back to browser-provided MIME type
+    return ext && mimeTypeMap[ext] ? mimeTypeMap[ext] : browserMimeType || 'application/octet-stream';
+}
+
 export async function POST(request: NextRequest) {
     try {
         // Verify admin authentication
@@ -26,13 +84,16 @@ export async function POST(request: NextRequest) {
         const timestamp = Date.now();
         const uniqueFilename = `${timestamp}-${Math.random().toString(36).substring(7)}.${fileExt}`;
         const shortCode = generateShortCode();
+        
+        // Get correct MIME type (prefer extension-based detection over browser-provided)
+        const contentType = getMimeTypeFromExtension(file.name, file.type);
 
         // Upload to Supabase Storage
         const adminClient = createAdminClient();
         const { data: uploadData, error: uploadError } = await adminClient.storage
             .from('files')
             .upload(uniqueFilename, file, {
-                contentType: file.type,
+                contentType,
                 cacheControl: '3600',
             });
 
@@ -48,7 +109,7 @@ export async function POST(request: NextRequest) {
                 original_filename: file.name,
                 file_path: uploadData.path,
                 file_size: file.size,
-                mime_type: file.type,
+                mime_type: contentType,
                 short_code: shortCode,
                 uploaded_by: user.id,
             } as any)

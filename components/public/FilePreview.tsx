@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Button } from '@/components/ui';
 import { getFileTypeInfo, formatFileSize } from '@/lib/utils/fileTypes';
 
 interface FilePreviewProps {
@@ -44,11 +43,16 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
         switch (typeInfo.category) {
             case 'image':
                 return (
-                    <div className="relative">
+                    <div style={{ position: 'relative' }}>
                         <img
                             src={fileUrl}
                             alt={file.originalFilename}
-                            className="max-w-full h-auto rounded"
+                            style={{
+                                maxWidth: '100%',
+                                height: 'auto',
+                                borderRadius: '6px',
+                                display: 'block',
+                            }}
                         />
                     </div>
                 );
@@ -58,8 +62,12 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                     <video
                         src={fileUrl}
                         controls
-                        className="w-full rounded"
                         preload="metadata"
+                        style={{
+                            width: '100%',
+                            borderRadius: '6px',
+                            backgroundColor: '#000',
+                        }}
                     >
                         Your browser does not support video playback.
                     </video>
@@ -67,20 +75,37 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
 
             case 'audio':
                 return (
-                    <div className="p-8">
-                        <div className="text-center mb-6">
-                            <div className="w-16 h-16 bg-[var(--background)] rounded mx-auto mb-4 flex items-center justify-center">
-                                <svg className="w-8 h-8 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div style={{ padding: '2rem' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                            <div style={{
+                                width: '64px',
+                                height: '64px',
+                                backgroundColor: '#1a1a1a',
+                                borderRadius: '6px',
+                                margin: '0 auto 1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <svg style={{ width: '32px', height: '32px', color: '#9ca3af' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                                 </svg>
                             </div>
-                            <h3 className="text-base font-medium text-[var(--text)]">{file.originalFilename}</h3>
+                            <h3 style={{
+                                fontSize: '1rem',
+                                fontWeight: 500,
+                                color: '#e0e0e0',
+                                margin: 0,
+                            }}>{file.originalFilename}</h3>
                         </div>
                         <audio
                             src={fileUrl}
                             controls
-                            className="w-full"
                             preload="metadata"
+                            style={{
+                                width: '100%',
+                                outline: 'none',
+                            }}
                         >
                             Your browser does not support audio playback.
                         </audio>
@@ -91,8 +116,14 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
                 return (
                     <iframe
                         src={fileUrl}
-                        className="w-full h-[80vh] rounded"
                         title={file.originalFilename}
+                        style={{
+                            width: '100%',
+                            height: '80vh',
+                            borderRadius: '6px',
+                            border: 'none',
+                            backgroundColor: '#fff',
+                        }}
                     />
                 );
 
@@ -100,17 +131,39 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
             case 'other':
             default:
                 return (
-                    <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-[var(--background)] rounded mx-auto mb-4 flex items-center justify-center">
-                            <div className="text-3xl">{typeInfo.icon}</div>
+                    <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                        <div style={{
+                            width: '64px',
+                            height: '64px',
+                            backgroundColor: '#1a1a1a',
+                            borderRadius: '6px',
+                            margin: '0 auto 1rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <div style={{ fontSize: '2rem', opacity: 0.7 }}>{typeInfo.icon}</div>
                         </div>
-                        <h3 className="text-lg font-medium text-[var(--text)] mb-2">
+                        <h3 style={{
+                            fontSize: '1.125rem',
+                            fontWeight: 500,
+                            color: '#e0e0e0',
+                            marginBottom: '0.5rem',
+                        }}>
                             {file.originalFilename}
                         </h3>
-                        <p className="text-[var(--text-secondary)] mb-6">
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            marginBottom: '1.5rem',
+                        }}>
                             {formatFileSize(file.fileSize)} • {typeInfo.category}
                         </p>
-                        <p className="text-sm text-[var(--text-muted)] mb-6">
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#6b7280',
+                            marginBottom: '1.5rem',
+                        }}>
                             Preview not available for this file type
                         </p>
                     </div>
@@ -119,36 +172,83 @@ export default function FilePreview({ fileData }: FilePreviewProps) {
     };
 
     return (
-        <div className="min-h-screen p-4 md:p-8 bg-[var(--background)]">
-            <div className="max-w-5xl mx-auto">
+        <div style={{
+            minHeight: '100vh',
+            padding: '2rem 1rem',
+            backgroundColor: '#1a1a1a',
+        }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 {/* Header */}
-                <div className="mb-6 flex items-center justify-between">
+                <div style={{
+                    marginBottom: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '1rem',
+                }}>
                     <div>
-                        <h1 className="text-xl font-semibold text-[var(--text)] mb-1">
+                        <h1 style={{
+                            fontSize: '1.25rem',
+                            fontWeight: 600,
+                            color: '#e0e0e0',
+                            marginBottom: '0.25rem',
+                            margin: '0 0 0.25rem 0',
+                        }}>
                             {file.originalFilename}
                         </h1>
-                        <p className="text-sm text-[var(--text-secondary)]">
+                        <p style={{
+                            fontSize: '0.875rem',
+                            color: '#9ca3af',
+                            margin: 0,
+                        }}>
                             {formatFileSize(file.fileSize)} • {typeInfo.category}
                         </p>
                     </div>
 
-                    <Button
-                        variant="primary"
+                    <button
                         onClick={handleDownload}
-                        isLoading={isDownloading}
+                        disabled={isDownloading}
+                        style={{
+                            padding: '0.625rem 1.5rem',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            color: 'white',
+                            backgroundColor: '#3b82f6',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: isDownloading ? 'not-allowed' : 'pointer',
+                            opacity: isDownloading ? 0.6 : 1,
+                            transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isDownloading) e.currentTarget.style.backgroundColor = '#2563eb';
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isDownloading) e.currentTarget.style.backgroundColor = '#3b82f6';
+                        }}
                     >
-                        Download
-                    </Button>
+                        {isDownloading ? 'Downloading...' : 'Download'}
+                    </button>
                 </div>
 
                 {/* Preview */}
-                <Card className="overflow-hidden">
+                <div style={{
+                    backgroundColor: '#2a2a2a',
+                    borderRadius: '8px',
+                    border: '1px solid #3a3a3a',
+                    overflow: 'hidden',
+                }}>
                     {renderPreview()}
-                </Card>
+                </div>
 
                 {/* Info */}
-                <div className="mt-6 text-center">
-                    <p className="text-xs text-[var(--text-muted)]">
+                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                    <p style={{
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                        margin: 0,
+                    }}>
                         This file was shared securely. Do not share your access credentials.
                     </p>
                 </div>

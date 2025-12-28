@@ -84,10 +84,13 @@ export default function ShortCodePage() {
                         setCachedUserIdentifier(data.userIdentifier);
                     } else {
                         // Access revoked or expired
+                        const errorData = await response.json().catch(() => ({}));
                         sessionStorage.removeItem(sessionKey);
+                        setError(errorData.error || 'Access denied');
                     }
                 } catch (e) {
                     sessionStorage.removeItem(sessionKey);
+                    // Silently handle revalidation errors (expected when access is revoked)
                 }
             }
             setIsRevalidating(false);
